@@ -3,25 +3,78 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --color-black: #080808;
+  --color-cream: #f7f2ea;
+  --color-brown: #3d1c10;
+  --color-brown-light: #6b3a2a;
+  --color-cream-dark: #e5d9c8;
+  --color-white: #ffffff;
+  --color-gold: #b8956a;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  * {
+    @apply border-cream-dark;
+  }
+
+  body {
+    @apply bg-cream text-black font-body antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-display;
+  }
+
+  a:focus-visible,
+  button:focus-visible {
+    outline: 2px solid var(--color-brown-light);
+    outline-offset: 2px;
   }
 }
 
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+@layer components {
+  .section-padding {
+    @apply py-20 md:py-28;
+  }
 }
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
   }
+
+  .skeleton {
+    @apply bg-cream-dark animate-shimmer rounded-lg;
+    background-size: 200% 100%;
+    background-image: linear-gradient(
+      90deg,
+      var(--color-cream-dark) 0%,
+      #f5efe6 50%,
+      var(--color-cream-dark) 100%
+    );
+  }
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  .print-only {
+    display: block !important;
+  }
+
+  body {
+    background: white !important;
+    color: black !important;
+  }
+}
+
+.print-only {
+  display: none;
 }

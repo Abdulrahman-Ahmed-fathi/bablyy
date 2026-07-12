@@ -1,0 +1,117 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model AdminUser {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+}
+
+model Category {
+  id       String    @id @default(cuid())
+  name     String    @unique
+  slug     String    @unique
+  imageUrl String    @default("")
+  products Product[]
+}
+
+model ContactMessage {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  message   String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model Product {
+  id           String      @id @default(cuid())
+  name         String
+  slug         String      @unique
+  description  String
+  price        Float
+  comparePrice Float?
+  imageUrl     String
+  images       String      @default("[]")
+  stock        Int         @default(0)
+  isActive     Boolean     @default(true)
+  isFeatured   Boolean     @default(false)
+  notes        String?
+  volume       String?
+  gender       String?
+  categoryId   String?
+  category     Category?   @relation(fields: [categoryId], references: [id])
+  offers       Offer[]
+  orderItems   OrderItem[]
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+}
+
+model Offer {
+  id          String    @id @default(cuid())
+  title       String
+  description String?
+  discountPct Float
+  isActive    Boolean   @default(true)
+  startsAt    DateTime?
+  endsAt      DateTime?
+  productId   String?
+  product     Product?  @relation(fields: [productId], references: [id])
+  createdAt   DateTime  @default(now())
+}
+
+model Order {
+  id          String      @id @default(cuid())
+  orderNumber String      @unique
+  status      String      @default("PENDING")
+  firstName   String
+  lastName    String
+  email       String
+  phone       String
+  address     String
+  city        String
+  governorate String
+  notes       String?
+  subtotal    Float
+  discount    Float       @default(0)
+  total       Float
+  items       OrderItem[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+model OrderItem {
+  id        String  @id @default(cuid())
+  orderId   String
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+  quantity  Int
+  price     Float
+  name      String
+}
+
+model SiteSettings {
+  id           String   @id @default("singleton")
+  storeName    String   @default("Maison de Parfum")
+  tagline      String   @default("Scents that tell your story")
+  phone        String   @default("")
+  email        String   @default("")
+  address      String   @default("")
+  instagram    String   @default("")
+  facebook     String   @default("")
+  whatsapp     String   @default("")
+  aboutText    String   @default("")
+  heroTitle    String   @default("Discover Your Signature Scent")
+  heroSubtitle String   @default("")
+  heroImageUrl String   @default("")
+  logoUrl           String   @default("")
+  showOffersSection Boolean  @default(true)
+  updatedAt         DateTime @updatedAt
+}
