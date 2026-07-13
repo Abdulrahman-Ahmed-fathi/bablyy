@@ -9,6 +9,7 @@ import { formatPrice, parseFragranceNotes } from "@/lib/utils";
 import { getProductDisplayPrice, type ProductWithCategory } from "@/lib/products";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { WishlistButton } from "@/components/store/WishlistButton";
 
 interface ProductCardProps {
   product: ProductWithCategory;
@@ -59,6 +60,10 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
           {pricing.hasSale && (
             <Badge className="absolute left-3 top-3 bg-brown text-cream">SALE</Badge>
           )}
+          <WishlistButton
+            productId={product.id}
+            className="absolute right-3 top-3"
+          />
           <div className="absolute inset-x-0 bottom-0 translate-y-full bg-black/85 p-3 backdrop-blur-sm transition-transform duration-300 group-hover:translate-y-0">
             <Button size="sm" className="w-full" onClick={handleAddToCart}>
               Add to Cart
