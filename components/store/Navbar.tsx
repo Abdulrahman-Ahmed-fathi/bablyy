@@ -3,10 +3,11 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { motion } from "framer-motion";
-import { Menu, X } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Menu, X, Heart, ShoppingBag as ShoppingBagIcon } from "lucide-react";
 import { CartIcon } from "./CartIcon";
 import { CartDrawer } from "./CartDrawer";
+import { WishlistIcon } from "./WishlistIcon";
 import type { SiteSettings } from "@prisma/client";
 
 interface NavbarProps {
@@ -24,11 +25,18 @@ export function Navbar({ settings }: NavbarProps) {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  useEffect(() => {
+    document.body.style.overflow = mobileOpen ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [mobileOpen]);
+
   const links = [
     { href: "/", label: "Home" },
     { href: "/products", label: "Perfumes" },
     { href: "/about", label: "About" },
-    { href: "/order-status", label: "Order Status" }
+    { href: "/order-status", label: "Order Status" },
   ];
 
   return (
@@ -70,11 +78,12 @@ export function Navbar({ settings }: NavbarProps) {
             ))}
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1">
+            <WishlistIcon />
             <CartIcon onClick={() => setCartOpen(true)} />
             <button
               type="button"
-              className="md:hidden"
+              className="p-2 md:hidden"
               onClick={() => setMobileOpen(true)}
               aria-label="Open menu"
             >
@@ -84,38 +93,79 @@ export function Navbar({ settings }: NavbarProps) {
         </nav>
       </motion.header>
 
-      {mobileOpen && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-yellow-950"
-        >
-          <button
-            type="button"
-            className="absolute right-6 top-6 text-cream"
-            onClick={() => setMobileOpen(false)}
-            aria-label="Close menu"
-          >
-            <X className="h-8 w-8" />
-          </button>
-          {links.map((link, i) => (
+      <AnimatePresence>
+        {mobileOpen && (
+          <>
             <motion.div
-              key={link.href}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.1 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-50 bg-black/40 md:hidden"
+              onClick={() => setMobileOpen(false)}
+            />
+            <motion.div
+              initial={{ x: "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "100%" }}
+              transition={{ type: "spring", stiffness: 300, damping: 32 }}
+              className="fixed inset-y-0 right-0 z-50 flex w-full max-w-xs flex-col bg-cream shadow-luxury md:hidden"
+              role="dialog"
+              aria-label="Site menu"
             >
-              <Link
-                href={link.href}
-                onClick={() => setMobileOpen(false)}
-                className="font-display text-3xl text-cream"
-              >
-                {link.label}
-              </Link>
+              <div className="flex items-center justify-between border-b border-cream-dark px-6 py-5">
+                <span className="font-display text-xl text-brown">
+                  {settings.storeName}
+                </span>
+                <button
+                  type="button"
+                  className="rounded-full p-1.5 text-black/70 transition-colors hover:bg-cream-dark hover:text-brown"
+                  onClick={() => setMobileOpen(false)}
+                  aria-label="Close menu"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+
+              <nav className="flex flex-1 flex-col overflow-y-auto py-4">
+                {links.map((link, i) => (
+                  <motion.div
+                    key={link.href}
+                    initial={{ opacity: 0, x: 16 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: i * 0.06 }}
+                    className="border-b border-cream-dark/70"
+                  >
+                    <Link
+                      href={link.href}
+                      onClick={() => setMobileOpen(false)}
+                      className="block px-6 py-4 font-display text-2xl text-black transition-colors hover:text-brown"
+                    >
+                      {link.label}
+                    </Link>
+                  </motion.div>
+                ))}
+              </nav>
+
+              <div className="space-y-1 border-t border-cream-dark px-2 py-4">
+                <Link
+                  href="/wishlist"
+                  onClick={() => setMobileOpen(false)}
+                  className="flex items-center gap-3 rounded-lg px-4 py-3 text-sm uppercase tracking-widest text-black/80 transition-colors hover:bg-cream-dark hover:text-brown"
+                >
+                  <Heart className="h-5 w-5" /> Wishlist
+                </Link>
+                <Link
+                  href="/cart"
+                  onClick={() => setMobileOpen(false)}
+                  className="flex items-center gap-3 rounded-lg px-4 py-3 text-sm uppercase tracking-widest text-black/80 transition-colors hover:bg-cream-dark hover:text-brown"
+                >
+                  <ShoppingBagIcon className="h-5 w-5" /> Cart
+                </Link>
+              </div>
             </motion.div>
-          ))}
-        </motion.div>
-      )}
+          </>
+        )}
+      </AnimatePresence>
 
       <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} />
     </>

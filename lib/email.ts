@@ -60,6 +60,7 @@ export async function sendOrderEmails(
   const adminEmail = process.env.ADMIN_EMAIL;
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
   const customerName = `${order.firstName} ${order.lastName}`;
+  const trackingUrl = `${siteUrl}/order-status?order=${encodeURIComponent(order.orderNumber)}`;
 
   const adminHtml = `
     <div style="font-family:Georgia,serif;max-width:600px;margin:0 auto;background:${brandColors.cream};padding:32px;">
@@ -84,11 +85,38 @@ export async function sendOrderEmails(
       <h1 style="color:${brandColors.brown};margin:0 0 8px;">${storeName}</h1>
       <p style="color:${brandColors.black};font-size:16px;">Dear ${order.firstName},</p>
       <p style="color:${brandColors.black};">Thank you for your order. We have received it and will contact you shortly.</p>
+
       <div style="background:white;padding:24px;margin:24px 0;text-align:center;border:1px solid #E8DDD0;">
         <p style="margin:0;color:${brandColors.black};font-size:14px;">Order Number</p>
         <p style="margin:8px 0 0;font-size:28px;color:${brandColors.brown};font-weight:bold;">${order.orderNumber}</p>
       </div>
+
+      <h2 style="color:${brandColors.brown};font-size:18px;">Delivery Details</h2>
+      <p style="color:${brandColors.black};line-height:1.6;">
+        ${customerName}<br/>
+        ${order.phone}<br/>
+        ${order.address}, ${order.city}, ${order.governorate}
+      </p>
+      ${order.notes ? `<p style="color:${brandColors.black};"><strong>Notes:</strong> ${order.notes}</p>` : ""}
+
+      <h2 style="color:${brandColors.brown};font-size:18px;">Order Summary</h2>
       ${itemsTableHtml(order.items)}
+      <div style="text-align:right;margin:8px 0;">
+        <p style="margin:4px 0;color:${brandColors.black};">Subtotal: ${order.subtotal.toFixed(2)} EGP</p>
+        ${order.discount > 0 ? `<p style="margin:4px 0;color:#16a34a;">Discount: -${order.discount.toFixed(2)} EGP</p>` : ""}
+        <p style="margin:4px 0;font-size:18px;color:${brandColors.brown};"><strong>Total: ${order.total.toFixed(2)} EGP</strong></p>
+      </div>
+
+      <div style="background:white;padding:20px;margin:24px 0;border:1px solid #E8DDD0;text-align:center;">
+        <p style="margin:0 0 12px;color:${brandColors.black};">
+          Want to check your order status? Visit our tracking page and enter your order number above,
+          or use the button below.
+        </p>
+        <a href="${trackingUrl}" style="display:inline-block;background:${brandColors.brown};color:white;padding:12px 28px;text-decoration:none;">
+          Track Your Order
+        </a>
+      </div>
+
       <p style="color:${brandColors.black};">We will contact you on <strong>${order.phone}</strong> to confirm delivery.</p>
       <p style="color:${brandColors.black};margin-top:24px;">With gratitude,<br/>${storeName}</p>
     </div>`;
@@ -98,6 +126,7 @@ export async function sendOrderEmails(
     console.log(`Admin email to: ${adminEmail}`);
     console.log(`Customer email to: ${order.email}`);
     console.log(`Order: ${order.orderNumber}, Total: ${order.total}`);
+    console.log(`Tracking URL: ${trackingUrl}`);
     return;
   }
 
@@ -111,12 +140,16 @@ export async function sendOrderEmails(
       });
     }
 
-    await transporter.sendMail({
-      from: process.env.SMTP_USER,
-      to: order.email,
-      subject: `Order Received - ${storeName}`,
-      html: customerHtml,
-    });
+    if (order.email) {
+      await transporter.sendMail({
+        from: process.env.SMTP_USER,
+        to: order.email,
+        subject: `Order Confirmed - ${order.orderNumber} - ${storeName}`,
+        html: customerHtml,
+      });
+    } else {
+      console.warn("[Email] Order has no customer email; skipping confirmation email.");
+    }
   } catch (error) {
     console.error("[Email] Failed to send order emails:", error);
   }

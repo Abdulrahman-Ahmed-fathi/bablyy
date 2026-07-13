@@ -26,7 +26,7 @@ export default async function EditProductPage({
           slug: product.slug,
           description: product.description,
           price: product.price,
-          comparePrice: product.comparePrice,
+          comparePrice: product.comparePrice ?? undefined,
           imageUrl: product.imageUrl,
           images: parseJsonArray(product.images),
           stock: product.stock,

@@ -26,12 +26,18 @@ const imagePathSchema = z
     "Upload an image or provide a valid URL"
   );
 
+
+const optionalPositivePrice = z.preprocess((val) => {
+  if (val === "" || val === null || val === undefined) return undefined;
+  return val;
+}, z.coerce.number().positive("Compare price must be positive").optional());
+
 export const productSchema = z.object({
   name: z.string().min(2, "Name is required"),
   slug: z.string().min(2, "Slug is required"),
   description: z.string().min(10, "Description is required"),
   price: z.coerce.number().positive("Price must be positive"),
-  comparePrice: z.coerce.number().positive().optional().nullable(),
+  comparePrice: optionalPositivePrice,
   imageUrl: imagePathSchema,
   images: z.array(imagePathSchema).max(4).default([]),
   stock: z.coerce.number().int().min(0),

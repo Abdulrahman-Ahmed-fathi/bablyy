@@ -1,6 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import toast from "react-hot-toast";
 import { OrderTimeline } from "@/components/store/OrderTimeline";
 import { OrderStatusBadge } from "@/components/admin/OrderStatusBadge";
@@ -19,18 +21,19 @@ interface OrderLookupResult {
 }
 
 export default function OrderStatusClient() {
-  const [orderNumber, setOrderNumber] = useState("");
+  const searchParams = useSearchParams();
+  const prefilled = searchParams.get("order") || "";
+  const [orderNumber, setOrderNumber] = useState(prefilled);
   const [loading, setLoading] = useState(false);
   const [order, setOrder] = useState<OrderLookupResult | null>(null);
 
-  const lookup = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!orderNumber.trim()) return;
+  const lookup = useCallback(async (value: string) => {
+    if (!value.trim()) return;
     setLoading(true);
     setOrder(null);
     try {
       const res = await fetch(
-        `/api/orders/lookup?orderNumber=${encodeURIComponent(orderNumber.trim())}`
+        `/api/orders/lookup?orderNumber=${encodeURIComponent(value.trim())}`
       );
       const data = await res.json();
       if (!res.ok) {
@@ -43,6 +46,19 @@ export default function OrderStatusClient() {
     } finally {
       setLoading(false);
     }
+  }, []);
+
+  // Auto-lookup when arriving with ?order=... in the URL (e.g. from the confirmation email)
+  useEffect(() => {
+    if (prefilled) {
+      lookup(prefilled);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [prefilled]);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    lookup(orderNumber);
   };
 
   return (
@@ -52,14 +68,14 @@ export default function OrderStatusClient() {
         <p className="mt-4 text-black/60">Enter your order number to check the latest status.</p>
       </div>
 
-      <form onSubmit={lookup} className="mx-auto mt-10 max-w-md space-y-4">
+      <form onSubmit={handleSubmit} className="mx-auto mt-10 max-w-md space-y-4">
         <div>
           <Label htmlFor="orderNumber">Order Number</Label>
           <Input
             id="orderNumber"
             value={orderNumber}
             onChange={(e) => setOrderNumber(e.target.value)}
-            placeholder="MP-0001"
+            placeholder="ORD-20260101-0001"
             className="mt-1"
           />
         </div>
@@ -92,6 +108,13 @@ export default function OrderStatusClient() {
           </div>
         </div>
       )}
+
+      <div className="mx-auto mt-12 max-w-lg text-center">
+        <p className="text-sm text-black/50">Not ready to track an order yet?</p>
+        <Button className="mt-4" asChild>
+          <Link href="/products">Browse Products</Link>
+        </Button>
+      </div>
     </div>
   );
 }

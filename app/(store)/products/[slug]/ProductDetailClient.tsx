@@ -22,6 +22,8 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { WishlistButton } from "@/components/store/WishlistButton";
+
 
 interface ProductDetailClientProps {
   product: ProductWithCategory;
@@ -162,6 +164,7 @@ export function ProductDetailClient({
               </span>
             )}
             {pricing.hasSale && <Badge className="bg-brown text-cream">Sale</Badge>}
+            <WishlistButton productId={product.id} size="md" className="ml-auto" />
           </div>
 
           <div className="mt-4 flex gap-4 text-sm text-black/60">
