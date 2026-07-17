@@ -26,6 +26,7 @@ export async function GET(request: NextRequest) {
       where,
       include: {
         category: true,
+        variants: { orderBy: { sortOrder: "asc" } },
         _count: { select: { orderItems: true } },
       },
       orderBy: { createdAt: "desc" },
@@ -60,23 +61,37 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Slug already exists" }, { status: 409 });
     }
 
+    const primaryVariant = data.variants.find((v) => v.isDefault) || data.variants[0];
+    const totalStock = data.variants.reduce((sum, v) => sum + v.stock, 0);
+
     const product = await prisma.product.create({
       data: {
         name: data.name,
         slug: data.slug,
         description: data.description,
-        price: data.price,
+        price: primaryVariant.price,
         comparePrice: data.comparePrice,
+        stock: totalStock,
         imageUrl: data.imageUrl,
         images: JSON.stringify(data.images || []),
-        stock: data.stock,
-        volume: data.volume,
         gender: data.gender,
         categoryId: data.categoryId || null,
         notes: data.notes ? JSON.stringify(data.notes) : null,
         isFeatured: data.isFeatured,
+        isBestSeller: data.isBestSeller,
+        isNew: data.isNew,
         isActive: data.isActive,
+        variants: {
+          create: data.variants.map((v, i) => ({
+            size: v.size,
+            price: v.price,
+            stock: v.stock,
+            isDefault: v.isDefault,
+            sortOrder: i,
+          })),
+        },
       },
+      include: { variants: true },
     });
     return NextResponse.json(product, { status: 201 });
   } catch {

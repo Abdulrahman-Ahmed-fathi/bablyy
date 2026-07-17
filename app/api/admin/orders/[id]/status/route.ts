@@ -46,6 +46,12 @@ export async function PATCH(
     const order = await prisma.$transaction(async (tx) => {
       if (isCancelling) {
         for (const item of existing.items) {
+          if (item.variantId) {
+            await tx.productVariant.update({
+              where: { id: item.variantId },
+              data: { stock: { increment: item.quantity } },
+            });
+          }
           await tx.product.update({
             where: { id: item.productId },
             data: { stock: { increment: item.quantity } },

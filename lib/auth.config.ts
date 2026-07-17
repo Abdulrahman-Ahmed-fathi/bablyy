@@ -1,11 +1,26 @@
 import type { NextAuthConfig } from "next-auth";
 
+const isHttps = process.env.NEXTAUTH_URL?.startsWith("https://") ?? false;
+
 export const authConfig = {
+  trustHost: true,
   pages: {
     signIn: "/login",
   },
   session: {
     strategy: "jwt" as const,
+    maxAge: 8 * 60 * 60, // 8 hours
+  },
+  cookies: {
+    sessionToken: {
+      name: `${isHttps ? "__Secure-" : ""}authjs.session-token`,
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: isHttps,
+      },
+    },
   },
   providers: [],
   callbacks: {

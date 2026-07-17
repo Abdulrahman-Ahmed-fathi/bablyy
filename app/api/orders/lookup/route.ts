@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
         total: true,
         createdAt: true,
         items: {
-          select: { name: true, quantity: true, price: true },
+          select: { name: true, size: true, quantity: true, price: true },
         },
       },
     });

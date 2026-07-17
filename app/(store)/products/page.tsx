@@ -2,13 +2,23 @@ import { Suspense } from "react";
 import { ProductGrid } from "@/components/store/ProductGrid";
 import { FilterSidebar } from "@/components/store/FilterSidebar";
 import { getProducts, getCategories } from "@/lib/products";
+import { absoluteUrl } from "@/lib/site-url";
 import type { Metadata } from "next";
 
 export const revalidate = 60;
 
 export const metadata: Metadata = {
-  title: "Perfumes | Maison de Parfum",
-  description: "Browse our curated collection of luxury fragrances",
+  title: "Shop Perfumes & Fragrances | Maison de Parfum",
+  description:
+    "Browse our curated collection of luxury perfumes for men and women. Filter by category, scent notes, and price.",
+  alternates: { canonical: absoluteUrl("/products") },
+  openGraph: {
+    title: "Shop Perfumes & Fragrances | Maison de Parfum",
+    description:
+      "Browse our curated collection of luxury perfumes for men and women. Filter by category, scent notes, and price.",
+    type: "website",
+    url: absoluteUrl("/products"),
+  },
 };
 
 interface ProductsPageProps {
@@ -73,7 +83,7 @@ async function ProductsContent({ searchParams }: ProductsPageProps) {
 export default function ProductsPage({ searchParams }: ProductsPageProps) {
   return (
     <div className="mx-auto max-w-container px-4 py-12 lg:px-8">
-      <h1 className="mb-12 font-display text-4xl md:text-5xl">Our Collection</h1>
+      <h1 className="mb-12 font-body text-4xl md:text-5xl">Our Collection</h1>
       <Suspense fallback={<ProductSkeleton />}>
         <ProductsContent searchParams={searchParams} />
       </Suspense>

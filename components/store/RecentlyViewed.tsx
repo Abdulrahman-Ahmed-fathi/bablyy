@@ -13,7 +13,7 @@ interface RecentProduct {
   imageUrl: string;
 }
 
-const STORAGE_KEY = "maison-recently-viewed";
+const STORAGE_KEY = "store-recently-viewed";
 
 export function addRecentlyViewed(product: RecentProduct) {
   if (typeof window === "undefined") return;
@@ -35,7 +35,7 @@ export function RecentlyViewed({ currentId }: { currentId: string }) {
 
   return (
     <section className="py-16">
-      <h2 className="mb-8 font-display text-2xl">Recently Viewed</h2>
+      <h2 className="mb-8 font-body text-2xl">Recently Viewed</h2>
       <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
         {items.map((item) => (
           <Link key={item.id} href={`/products/${item.slug}`} className="group">
@@ -48,7 +48,7 @@ export function RecentlyViewed({ currentId }: { currentId: string }) {
                 sizes="200px"
               />
             </div>
-            <h3 className="mt-2 font-display">{item.name}</h3>
+            <h3 className="mt-2 font-body">{item.name}</h3>
             <p className="text-sm text-brown">{formatPrice(item.price)}</p>
           </Link>
         ))}

@@ -8,6 +8,7 @@ import { Minus, Plus, Copy, Share2 } from "lucide-react";
 import { SafeImage } from "@/components/store/SafeImage";
 import { FragranceNotes } from "@/components/store/FragranceNotes";
 import { ProductCard } from "@/components/store/ProductCard";
+import { ProductSizeSelector } from "@/components/store/ProductSizeSelector";
 import { RecentlyViewed, addRecentlyViewed } from "@/components/store/RecentlyViewed";
 import { useCartStore } from "@/lib/cart";
 import {
@@ -16,13 +17,13 @@ import {
   parseJsonArray,
 } from "@/lib/utils";
 import {
-  getProductDisplayPrice,
+  getDefaultVariant,
+  getVariantDisplayPrice,
   type ProductWithCategory,
 } from "@/lib/products";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { WishlistButton } from "@/components/store/WishlistButton";
 
 
 interface ProductDetailClientProps {
@@ -40,10 +41,23 @@ export function ProductDetailClient({
   const [showStickyBar, setShowStickyBar] = useState(false);
   const headerRef = useRef<HTMLDivElement>(null);
   const addItem = useCartStore((s) => s.addItem);
-  const pricing = getProductDisplayPrice(product);
+
+  const defaultVariant = getDefaultVariant(product);
+  const [selectedVariantId, setSelectedVariantId] = useState(defaultVariant?.id || "");
+  const selectedVariant =
+    product.variants.find((v) => v.id === selectedVariantId) || defaultVariant;
+
+  const pricing = selectedVariant
+    ? getVariantDisplayPrice(product, selectedVariant)
+    : { price: product.price, comparePrice: null, hasSale: false };
   const notes = parseFragranceNotes(product.notes);
 
   useEffect(() => {
+    setQuantity(1);
+  }, [selectedVariantId]);
+
+  useEffect(() => {
+    if (!selectedVariant) return;
     addRecentlyViewed({
       id: product.id,
       slug: product.slug,
@@ -51,7 +65,8 @@ export function ProductDetailClient({
       price: pricing.price,
       imageUrl: product.imageUrl,
     });
-  }, [product, pricing.price]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [product.id]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -62,26 +77,28 @@ export function ProductDetailClient({
     return () => observer.disconnect();
   }, []);
 
+  const stock = selectedVariant?.stock ?? 0;
   const stockStatus =
-    product.stock <= 0
+    stock <= 0
       ? { label: "Out of Stock", color: "text-red-600" }
-      : product.stock <= 5
+      : stock <= 5
       ? { label: "Low Stock", color: "text-amber-600" }
       : { label: "In Stock", color: "text-green-600" };
 
   const handleAddToCart = () => {
-    if (product.stock <= 0) {
+    if (!selectedVariant || selectedVariant.stock <= 0) {
       toast.error("Out of stock");
       return;
     }
     addItem({
       productId: product.id,
+      variantId: selectedVariant.id,
+      size: selectedVariant.size,
       name: product.name,
       price: pricing.price,
       imageUrl: product.imageUrl,
-      volume: product.volume,
       slug: product.slug,
-      stock: product.stock,
+      stock: selectedVariant.stock,
       quantity,
     });
     toast.success("Added to cart");
@@ -152,10 +169,17 @@ export function ProductDetailClient({
               {product.category.name}
             </Link>
           )}
-          <h1 className="mt-2 font-display text-4xl md:text-5xl">{product.name}</h1>
+          {product.isBestSeller && (
+            <Badge className="ms-2 bg-black text-gold">Bestseller</Badge>
+          )}
+          <h1 className="mt-2 font-body text-4xl md:text-5xl">{product.name}</h1>
+          <p className="mt-1 text-sm text-black/50">
+            {product.gender ? `${product.gender} Perfume` : "Perfume"}
+            {selectedVariant && ` (${selectedVariant.size})`}
+          </p>
 
           <div className="mt-4 flex items-center gap-3">
-            <span className="font-display text-2xl text-brown">
+            <span className="font-body text-2xl text-brown">
               {formatPrice(pricing.price)}
             </span>
             {pricing.comparePrice && (
@@ -164,24 +188,32 @@ export function ProductDetailClient({
               </span>
             )}
             {pricing.hasSale && <Badge className="bg-brown text-cream">Sale</Badge>}
-            <WishlistButton productId={product.id} size="md" className="ml-auto" />
-          </div>
-
-          <div className="mt-4 flex gap-4 text-sm text-black/60">
-            {product.volume && <span>{product.volume}</span>}
-            {product.gender && <span>{product.gender}</span>}
-            <span className={stockStatus.color}>{stockStatus.label}</span>
           </div>
 
           <p className="mt-6 leading-relaxed text-black/80">{product.description}</p>
 
-          <div className="mt-8">
+          {product.variants.length > 0 && (
+            <div className="mt-8">
+              <span className="text-sm uppercase tracking-wider text-black/70">Size</span>
+              <ProductSizeSelector
+                variants={product.variants}
+                selectedId={selectedVariantId}
+                onSelect={setSelectedVariantId}
+                offers={product.offers}
+                size="lg"
+                className="mt-3 grid-cols-3 sm:max-w-md"
+              />
+            </div>
+          )}
+
+          <div className="mt-6">
             <FragranceNotes notes={notes} />
           </div>
 
           <div className="mt-8 flex items-center gap-4">
             <span className="text-sm uppercase tracking-wider">Quantity</span>
             <div className="flex items-center rounded-lg border border-cream-dark">
+               
               <button
                 type="button"
                 className="px-3 py-2"
@@ -195,20 +227,22 @@ export function ProductDetailClient({
                 type="button"
                 className="px-3 py-2"
                 onClick={() =>
-                  setQuantity(Math.min(quantity + 1, product.stock, 10))
+                  setQuantity(Math.min(quantity + 1, stock, 10))
                 }
                 aria-label="Increase quantity"
               >
                 <Plus className="h-4 w-4" />
               </button>
             </div>
+            <span className={`text-sm ${stockStatus.color}`}>{stockStatus.label}</span>
+           
           </div>
 
           <Button
             className="mt-6 w-full"
             size="lg"
             onClick={handleAddToCart}
-            disabled={product.stock <= 0}
+            disabled={stock <= 0}
           >
             Add to Cart
           </Button>
@@ -241,7 +275,7 @@ export function ProductDetailClient({
 
       {related.length > 0 && (
         <section className="mt-16">
-          <h2 className="mb-8 font-display text-2xl">You May Also Like</h2>
+          <h2 className="mb-8 font-body text-2xl">You May Also Like</h2>
           <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
             {related.map((p, i) => (
               <ProductCard key={p.id} product={p} index={i} />
@@ -258,10 +292,15 @@ export function ProductDetailClient({
           animate={{ y: 0 }}
           className="fixed inset-x-0 bottom-0 z-30 flex items-center justify-between border-t border-cream-dark bg-cream p-4 md:hidden"
         >
-          <span className="font-display text-xl text-brown">
-            {formatPrice(pricing.price)}
-          </span>
-          <Button onClick={handleAddToCart} disabled={product.stock <= 0}>
+          <div>
+            <span className="font-body text-xl text-brown">
+              {formatPrice(pricing.price)}
+            </span>
+            {selectedVariant && (
+              <span className="ms-2 text-xs text-black/50">{selectedVariant.size}</span>
+            )}
+          </div>
+          <Button onClick={handleAddToCart} disabled={stock <= 0}>
             Add to Cart
           </Button>
         </motion.div>

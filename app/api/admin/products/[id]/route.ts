@@ -29,26 +29,47 @@ export async function PATCH(
       }
     }
 
+    const primaryVariant = data.variants
+      ? data.variants.find((v) => v.isDefault) || data.variants[0]
+      : undefined;
+    const totalStock = data.variants
+      ? data.variants.reduce((sum, v) => sum + v.stock, 0)
+      : undefined;
+
     const product = await prisma.product.update({
       where: { id: params.id },
       data: {
         ...(data.name !== undefined && { name: data.name }),
         ...(data.slug !== undefined && { slug: data.slug }),
         ...(data.description !== undefined && { description: data.description }),
-        ...(data.price !== undefined && { price: data.price }),
         ...(data.comparePrice !== undefined && { comparePrice: data.comparePrice }),
         ...(data.imageUrl !== undefined && { imageUrl: data.imageUrl }),
         ...(data.images !== undefined && { images: JSON.stringify(data.images) }),
-        ...(data.stock !== undefined && { stock: data.stock }),
-        ...(data.volume !== undefined && { volume: data.volume }),
         ...(data.gender !== undefined && { gender: data.gender }),
         ...(data.categoryId !== undefined && { categoryId: data.categoryId || null }),
         ...(data.notes !== undefined && {
           notes: data.notes ? JSON.stringify(data.notes) : null,
         }),
         ...(data.isFeatured !== undefined && { isFeatured: data.isFeatured }),
+        ...(data.isBestSeller !== undefined && { isBestSeller: data.isBestSeller }),
+        ...(data.isNew !== undefined && { isNew: data.isNew }),
         ...(data.isActive !== undefined && { isActive: data.isActive }),
+        ...(primaryVariant !== undefined && { price: primaryVariant.price }),
+        ...(totalStock !== undefined && { stock: totalStock }),
+        ...(data.variants !== undefined && {
+          variants: {
+            deleteMany: {},
+            create: data.variants.map((v, i) => ({
+              size: v.size,
+              price: v.price,
+              stock: v.stock,
+              isDefault: v.isDefault,
+              sortOrder: i,
+            })),
+          },
+        }),
       },
+      include: { variants: true },
     });
     return NextResponse.json(product);
   } catch {

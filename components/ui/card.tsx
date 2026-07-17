@@ -22,7 +22,7 @@ const CardTitle = ({
   ...props
 }: React.HTMLAttributes<HTMLHeadingElement>) => (
   <h3
-    className={cn("font-display text-2xl font-semibold leading-none tracking-tight", className)}
+    className={cn("font-body text-2xl font-semibold leading-none tracking-tight", className)}
     {...props}
   />
 );

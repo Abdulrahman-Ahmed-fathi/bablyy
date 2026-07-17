@@ -7,13 +7,12 @@ interface FragranceNotesProps {
 export function FragranceNotes({ notes }: FragranceNotesProps) {
   const layers = [
     { label: "Top Notes", items: notes.top },
-    { label: "Heart Notes", items: notes.heart },
     { label: "Base Notes", items: notes.base },
   ];
 
   return (
     <div className="space-y-4">
-      <h3 className="font-display text-xl">Fragrance Notes</h3>
+      <h3 className="font-body text-xl">Fragrance Notes</h3>
       <div className="space-y-3">
         {layers.map((layer, i) => (
           <div

@@ -79,6 +79,7 @@ export default function CheckoutPage() {
           ...data,
           items: items.map((i) => ({
             productId: i.productId,
+            variantId: i.variantId,
             quantity: i.quantity,
           })),
         }),
@@ -251,7 +252,7 @@ export default function CheckoutPage() {
             {step === 3 && (
               <div className="space-y-6">
                 <div className="rounded-2xl border border-cream-dark bg-white p-6 shadow-sm">
-                  <h3 className="font-display text-lg">Personal Information</h3>
+                  <h3 className="font-body text-lg">Personal Information</h3>
                   <p className="mt-2 text-sm text-black/70">
                     {formData.firstName} {formData.lastName}<br />
                     {formData.email}<br />
@@ -259,7 +260,7 @@ export default function CheckoutPage() {
                   </p>
                 </div>
                 <div className="rounded-2xl border border-cream-dark bg-white p-6 shadow-sm">
-                  <h3 className="font-display text-lg">Delivery</h3>
+                  <h3 className="font-body text-lg">Delivery</h3>
                   <p className="mt-2 text-sm text-black/70">
                     {formData.address}<br />
                     {formData.city}, {formData.governorate}
@@ -267,11 +268,14 @@ export default function CheckoutPage() {
                   </p>
                 </div>
                 <div className="rounded-2xl border border-cream-dark bg-white p-6 shadow-sm">
-                  <h3 className="font-display text-lg">Items</h3>
+                  <h3 className="font-body text-lg">Items</h3>
                   <ul className="mt-2 space-y-2 text-sm">
                     {items.map((item) => (
-                      <li key={item.productId} className="flex justify-between">
-                        <span>{item.name} × {item.quantity}</span>
+                      <li key={`${item.productId}-${item.variantId}`} className="flex justify-between">
+                        <span>
+                          {item.name}
+                          {item.size && ` (${item.size})`} × {item.quantity}
+                        </span>
                         <span>{formatPrice(item.price * item.quantity)}</span>
                       </li>
                     ))}
@@ -292,11 +296,14 @@ export default function CheckoutPage() {
           <div>
             <Card className="sticky top-24 rounded-2xl shadow-luxury-sm">
               <CardContent className="p-6">
-                <h2 className="font-display text-xl">Order Summary</h2>
+                <h2 className="font-body text-xl">Order Summary</h2>
                 <ul className="mt-4 space-y-2 text-sm">
                   {items.map((item) => (
-                    <li key={item.productId} className="flex justify-between">
-                      <span>{item.name} × {item.quantity}</span>
+                    <li key={`${item.productId}-${item.variantId}`} className="flex justify-between">
+                      <span>
+                        {item.name}
+                        {item.size && ` (${item.size})`} × {item.quantity}
+                      </span>
                       <span>{formatPrice(item.price * item.quantity)}</span>
                     </li>
                   ))}
@@ -311,7 +318,7 @@ export default function CheckoutPage() {
                     <span>-{formatPrice(discount)}</span>
                   </div>
                 )}
-                <div className="mt-4 flex justify-between border-t border-cream-dark pt-4 font-display text-xl">
+                <div className="mt-4 flex justify-between border-t border-cream-dark pt-4 font-body text-xl">
                   <span>Total</span>
                   <span className="text-brown">{formatPrice(total)}</span>
                 </div>

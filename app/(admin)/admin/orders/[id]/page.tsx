@@ -42,6 +42,7 @@ interface OrderDetail {
   createdAt: string;
   items: Array<{
     name: string;
+    size: string | null;
     quantity: number;
     price: number;
   }>;
@@ -164,7 +165,10 @@ export default function OrderDetailPage() {
             <TableBody>
               {order.items.map((item, i) => (
                 <TableRow key={i}>
-                  <TableCell>{item.name}</TableCell>
+                  <TableCell>
+                    {item.name}
+                    {item.size && <span className="text-stone-400"> ({item.size})</span>}
+                  </TableCell>
                   <TableCell>{item.quantity}</TableCell>
                   <TableCell>{formatPrice(item.price)}</TableCell>
                   <TableCell>{formatPrice(item.price * item.quantity)}</TableCell>

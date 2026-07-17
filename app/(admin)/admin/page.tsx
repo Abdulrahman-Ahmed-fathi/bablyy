@@ -49,9 +49,22 @@ export default function AdminDashboardPage() {
 
   useEffect(() => {
     fetch("/api/admin/stats")
-      .then((r) => r.json())
+      .then((r) => {
+        if (!r.ok) throw new Error("Failed to load stats");
+        return r.json();
+      })
       .then(setStats)
-      .catch(() => {});
+      .catch(() => {
+        setStats({
+          totalOrders: 0,
+          pendingOrders: 0,
+          totalProducts: 0,
+          totalRevenue: 0,
+          ordersPerDay: [],
+          ordersByStatus: [],
+          recentOrders: [],
+        });
+      });
   }, []);
 
   if (!stats) {

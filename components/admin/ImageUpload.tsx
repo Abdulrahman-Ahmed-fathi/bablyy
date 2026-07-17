@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import Image from "next/image";
+import { SafeImage } from "@/components/store/SafeImage";
 import toast from "react-hot-toast";
 import { Upload, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -67,7 +67,7 @@ export function ImageUpload({
       {value ? (
         <div className="flex items-start gap-4">
           <div className={`relative overflow-hidden rounded-lg bg-stone-100 ${aspectClass}`}>
-            <Image src={value} alt="Preview" fill className={imageClassName} sizes="200px" />
+            <SafeImage src={value} alt="Preview" fill className={imageClassName} sizes="200px" />
           </div>
           <div className="flex flex-col gap-2">
             <Button

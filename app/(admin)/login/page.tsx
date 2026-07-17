@@ -40,13 +40,13 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-black px-4">
+    <div className="flex min-h-screen items-center justify-center bg-yellow-50 px-4">
       <Card className="w-full max-w-md border-0 bg-cream">
         <CardContent className="p-8">
-          <h1 className="text-center font-display text-3xl text-brown">
-            Maison de Parfum
+          <h1 className="text-center font-body text-3xl text-brown">
+            ADMIN DASHBOARD
           </h1>
-          <p className="mt-2 text-center text-sm text-black/60">Admin Sign In</p>
+          <p className="mt-2 text-center text-sm text-black/60">Sign In</p>
 
           <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-4">
             <div>

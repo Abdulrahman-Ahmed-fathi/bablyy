@@ -5,8 +5,9 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import toast from "react-hot-toast";
-import Image from "next/image";
-import { productSchema, type ProductFormData } from "@/lib/validations";
+import { SafeImage } from "@/components/store/SafeImage";
+import { Plus, Trash2 } from "lucide-react";
+import { productFormSchema, type ProductFormData } from "@/lib/validations";
 import { generateSlug } from "@/lib/utils";
 import { ImageUpload } from "@/components/admin/ImageUpload";
 import { Button } from "@/components/ui/button";
@@ -27,9 +28,18 @@ interface Category {
   name: string;
 }
 
+interface VariantInput {
+  size: string;
+  price: number;
+  stock: number;
+  isDefault: boolean;
+}
+
 interface ProductFormProps {
   initialData?: Partial<ProductFormData> & { id?: string };
 }
+
+const emptyVariant: VariantInput = { size: "", price: 0, stock: 0, isDefault: true };
 
 export function ProductForm({ initialData }: ProductFormProps) {
   const router = useRouter();
@@ -42,6 +52,11 @@ export function ProductForm({ initialData }: ProductFormProps) {
     heart: initialData?.notes?.heart?.join(", ") || "",
     base: initialData?.notes?.base?.join(", ") || "",
   });
+  const [variants, setVariants] = useState<VariantInput[]>(
+    initialData?.variants && initialData.variants.length > 0
+      ? initialData.variants
+      : [emptyVariant]
+  );
 
   const {
     register,
@@ -50,20 +65,19 @@ export function ProductForm({ initialData }: ProductFormProps) {
     watch,
     formState: { errors, isSubmitting },
   } = useForm<ProductFormData>({
-    resolver: zodResolver(productSchema) as never,
+    resolver: zodResolver(productFormSchema) as never,
     defaultValues: {
       name: initialData?.name || "",
       slug: initialData?.slug || "",
       description: initialData?.description || "",
-      price: initialData?.price || 0,
       comparePrice: initialData?.comparePrice,
       imageUrl: initialData?.imageUrl || "",
       images: initialData?.images || [],
-      stock: initialData?.stock || 0,
-      volume: initialData?.volume || "",
       gender: initialData?.gender || undefined,
       categoryId: initialData?.categoryId || "",
       isFeatured: initialData?.isFeatured || false,
+      isBestSeller: initialData?.isBestSeller || false,
+      isNew: initialData?.isNew || false,
       isActive: initialData?.isActive ?? true,
     },
   });
@@ -71,6 +85,8 @@ export function ProductForm({ initialData }: ProductFormProps) {
   const name = watch("name");
   const imageUrl = watch("imageUrl");
   const isFeatured = watch("isFeatured");
+  const isBestSeller = watch("isBestSeller");
+  const isNew = watch("isNew");
   const isActive = watch("isActive");
 
   useEffect(() => {
@@ -100,7 +116,47 @@ export function ProductForm({ initialData }: ProductFormProps) {
     setExtraImages(updated.filter(Boolean));
   };
 
+  const updateVariant = (index: number, field: keyof VariantInput, value: string | number | boolean) => {
+    setVariants((prev) =>
+      prev.map((v, i) => (i === index ? { ...v, [field]: value } : v))
+    );
+  };
+
+  const setDefaultVariant = (index: number) => {
+    setVariants((prev) => prev.map((v, i) => ({ ...v, isDefault: i === index })));
+  };
+
+  const addVariant = () => {
+    setVariants((prev) => [...prev, { size: "", price: 0, stock: 0, isDefault: false }]);
+  };
+
+  const removeVariant = (index: number) => {
+    setVariants((prev) => {
+      const updated = prev.filter((_, i) => i !== index);
+      if (updated.length > 0 && !updated.some((v) => v.isDefault)) {
+        updated[0].isDefault = true;
+      }
+      return updated;
+    });
+  };
+
   const onSubmit = async (data: ProductFormData) => {
+    const cleanedVariants = variants
+      .map((v) => ({ ...v, size: v.size.trim() }))
+      .filter((v) => v.size);
+
+    if (cleanedVariants.length === 0) {
+      toast.error("Add at least one size with a price.");
+      return;
+    }
+    if (cleanedVariants.some((v) => !v.price || v.price <= 0)) {
+      toast.error("Each size needs a price greater than 0.");
+      return;
+    }
+    if (!cleanedVariants.some((v) => v.isDefault)) {
+      cleanedVariants[0].isDefault = true;
+    }
+
     const payload = {
       ...data,
       images: extraImages.filter(Boolean),
@@ -111,6 +167,7 @@ export function ProductForm({ initialData }: ProductFormProps) {
       },
       categoryId: data.categoryId || null,
       comparePrice: data.comparePrice || null,
+      variants: cleanedVariants,
     };
 
     const url = initialData?.id
@@ -156,23 +213,9 @@ export function ProductForm({ initialData }: ProductFormProps) {
 
       <div className="grid gap-4 sm:grid-cols-3">
         <div>
-          <Label htmlFor="price">Price *</Label>
-          <Input id="price" type="number" step="0.01" {...register("price")} className="mt-1" />
-        </div>
-        <div>
           <Label htmlFor="comparePrice">Compare Price</Label>
           <Input id="comparePrice" type="number" step="0.01" {...register("comparePrice")} className="mt-1" />
-        </div>
-        <div>
-          <Label htmlFor="stock">Stock *</Label>
-          <Input id="stock" type="number" {...register("stock")} className="mt-1" />
-        </div>
-      </div>
-
-      <div className="grid gap-4 sm:grid-cols-3">
-        <div>
-          <Label htmlFor="volume">Volume</Label>
-          <Input id="volume" placeholder="50ml" {...register("volume")} className="mt-1" />
+          <p className="mt-1 text-xs text-stone-500">Optional &quot;was&quot; price, shown struck through.</p>
         </div>
         <div>
           <Label>Gender</Label>
@@ -217,7 +260,7 @@ export function ProductForm({ initialData }: ProductFormProps) {
               {extraImages[i] ? (
                 <div className="flex items-start gap-2">
                   <div className="relative h-24 w-20 overflow-hidden rounded-lg bg-stone-100">
-                    <Image src={extraImages[i]} alt={`Gallery ${i + 1}`} fill className="object-cover" sizes="80px" />
+                    <SafeImage src={extraImages[i]} alt={`Gallery ${i + 1}`} fill className="object-cover" sizes="80px" />
                   </div>
                   <div className="flex flex-col gap-2">
                     <label className="inline-flex h-9 cursor-pointer items-center justify-center rounded-md border border-input bg-background px-3 text-sm font-medium shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground">
@@ -272,10 +315,91 @@ export function ProductForm({ initialData }: ProductFormProps) {
         <Input placeholder="Base notes" value={notes.base} onChange={(e) => setNotes({ ...notes, base: e.target.value })} />
       </div>
 
-      <div className="flex items-center gap-6">
+      <div className="space-y-4 rounded-xl border border-stone-200 bg-stone-50 p-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <Label>Sizes &amp; Pricing *</Label>
+            <p className="text-xs text-stone-500">
+              Add every size this perfume comes in. Mark one as the default shown first to shoppers.
+            </p>
+          </div>
+          <Button type="button" variant="outline" size="sm" onClick={addVariant}>
+            <Plus className="mr-1 h-4 w-4" /> Add Size
+          </Button>
+        </div>
+
+        <div className="space-y-3">
+          {variants.map((variant, i) => (
+            <div
+              key={i}
+              className="grid grid-cols-[auto_1fr_1fr_1fr_auto] items-end gap-2 rounded-lg border border-stone-200 bg-white p-3"
+            >
+              <div className="flex flex-col items-center gap-1">
+                <Label className="text-[10px] uppercase text-stone-400">Default</Label>
+                <input
+                  type="radio"
+                  name="defaultVariant"
+                  checked={variant.isDefault}
+                  onChange={() => setDefaultVariant(i)}
+                  className="h-4 w-4 accent-stone-900"
+                  aria-label={`Set size ${i + 1} as default`}
+                />
+              </div>
+              <div>
+                <Label className="text-xs">Size</Label>
+                <Input
+                  placeholder="e.g. 50ml"
+                  value={variant.size}
+                  onChange={(e) => updateVariant(i, "size", e.target.value)}
+                  className="mt-1"
+                />
+              </div>
+              <div>
+                <Label className="text-xs">Price (EGP)</Label>
+                <Input
+                  type="number"
+                  step="0.01"
+                  value={variant.price || ""}
+                  onChange={(e) => updateVariant(i, "price", Number(e.target.value))}
+                  className="mt-1"
+                />
+              </div>
+              <div>
+                <Label className="text-xs">Stock</Label>
+                <Input
+                  type="number"
+                  value={variant.stock || ""}
+                  onChange={(e) => updateVariant(i, "stock", Number(e.target.value))}
+                  className="mt-1"
+                />
+              </div>
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                disabled={variants.length === 1}
+                onClick={() => removeVariant(i)}
+                aria-label="Remove size"
+              >
+                <Trash2 className="h-4 w-4 text-red-600" />
+              </Button>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="flex flex-wrap items-center gap-6 rounded-xl border border-stone-100 bg-stone-50 p-4">
         <div className="flex items-center gap-2">
           <Switch checked={isFeatured} onCheckedChange={(v) => setValue("isFeatured", v)} />
           <Label>Featured</Label>
+        </div>
+        <div className="flex items-center gap-2">
+          <Switch checked={isBestSeller} onCheckedChange={(v) => setValue("isBestSeller", v)} />
+          <Label>Best Seller</Label>
+        </div>
+        <div className="flex items-center gap-2">
+          <Switch checked={isNew} onCheckedChange={(v) => setValue("isNew", v)} />
+          <Label>New Arrival</Label>
         </div>
         <div className="flex items-center gap-2">
           <Switch checked={isActive} onCheckedChange={(v) => setValue("isActive", v)} />

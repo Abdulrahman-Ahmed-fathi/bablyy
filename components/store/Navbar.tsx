@@ -2,13 +2,14 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import Image from "next/image";
+import { SafeImage } from "@/components/store/SafeImage";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Heart, ShoppingBag as ShoppingBagIcon } from "lucide-react";
+import { Menu, X,Heart, ShoppingBag as ShoppingBagIcon } from "lucide-react";
 import { CartIcon } from "./CartIcon";
 import { CartDrawer } from "./CartDrawer";
 import { WishlistIcon } from "./WishlistIcon";
 import type { SiteSettings } from "@prisma/client";
+
 
 interface NavbarProps {
   settings: SiteSettings;
@@ -36,7 +37,7 @@ export function Navbar({ settings }: NavbarProps) {
     { href: "/", label: "Home" },
     { href: "/products", label: "Perfumes" },
     { href: "/about", label: "About" },
-    { href: "/order-status", label: "Order Status" },
+    { href: "/order-status", label: "Order Status" }
   ];
 
   return (
@@ -52,9 +53,12 @@ export function Navbar({ settings }: NavbarProps) {
         }`}
       >
         <nav className="mx-auto flex max-w-container items-center justify-between px-4 py-4 lg:px-8">
-          <Link href="/" className="font-display text-2xl tracking-wide text-black">
+          <Link
+            href="/"
+            className="font-body text-2xl tracking-wide text-black"
+          >
             {settings.logoUrl ? (
-              <Image
+              <SafeImage
                 src={settings.logoUrl}
                 alt={settings.storeName}
                 width={120}
@@ -113,7 +117,7 @@ export function Navbar({ settings }: NavbarProps) {
               aria-label="Site menu"
             >
               <div className="flex items-center justify-between border-b border-cream-dark px-6 py-5">
-                <span className="font-display text-xl text-brown">
+                <span className="font-body text-xl text-brown">
                   {settings.storeName}
                 </span>
                 <button
@@ -138,7 +142,7 @@ export function Navbar({ settings }: NavbarProps) {
                     <Link
                       href={link.href}
                       onClick={() => setMobileOpen(false)}
-                      className="block px-6 py-4 font-display text-2xl text-black transition-colors hover:text-brown"
+                      className="block px-6 py-4 font-body text-2xl text-black transition-colors hover:text-brown"
                     >
                       {link.label}
                     </Link>

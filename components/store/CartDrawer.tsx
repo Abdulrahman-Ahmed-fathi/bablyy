@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import Link from "next/link";
-import Image from "next/image";
+import { SafeImage } from "@/components/store/SafeImage";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Minus, Plus, Trash2 } from "lucide-react";
 import { useCartStore } from "@/lib/cart";
@@ -61,9 +61,9 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
               ) : (
                 <ul className="space-y-6">
                   {items.map((item) => (
-                    <li key={item.productId} className="flex gap-4">
+                    <li key={`${item.productId}-${item.variantId}`} className="flex gap-4">
                       <div className="relative h-20 w-16 shrink-0 overflow-hidden rounded-lg bg-cream-dark">
-                        <Image
+                        <SafeImage
                           src={item.imageUrl}
                           alt={item.name}
                           fill
@@ -72,13 +72,13 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
                         />
                       </div>
                       <div className="flex-1">
-                        <h3 className="font-display text-lg">{item.name}</h3>
-                        {item.volume && <p className="text-xs text-black/50">{item.volume}</p>}
+                        <h3 className="font-body text-lg">{item.name}</h3>
+                        {item.size && <p className="text-xs text-black/50">Size: {item.size}</p>}
                         <p className="text-sm text-brown">{formatPrice(item.price)}</p>
                         <div className="mt-2 flex items-center gap-2">
                           <button
                             type="button"
-                            onClick={() => updateQuantity(item.productId, item.quantity - 1)}
+                            onClick={() => updateQuantity(item.productId, item.variantId, item.quantity - 1)}
                             className="rounded border p-1"
                             aria-label="Decrease quantity"
                           >
@@ -87,7 +87,7 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
                           <span className="w-6 text-center text-sm">{item.quantity}</span>
                           <button
                             type="button"
-                            onClick={() => updateQuantity(item.productId, item.quantity + 1)}
+                            onClick={() => updateQuantity(item.productId, item.variantId, item.quantity + 1)}
                             className="rounded border p-1"
                             aria-label="Increase quantity"
                           >
@@ -95,7 +95,7 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
                           </button>
                           <button
                             type="button"
-                            onClick={() => removeItem(item.productId)}
+                            onClick={() => removeItem(item.productId, item.variantId)}
                             className="ml-auto text-red-600"
                             aria-label="Remove item"
                           >
@@ -113,7 +113,7 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
               <div className="border-t border-cream-dark p-6">
                 <div className="mb-4 flex justify-between">
                   <span className="text-sm uppercase tracking-wider">Subtotal</span>
-                  <span className="font-display text-xl">{formatPrice(getSubtotal())}</span>
+                  <span className="font-body text-xl">{formatPrice(getSubtotal())}</span>
                 </div>
                 <div className="flex flex-col gap-3">
                   <Button variant="outline" onClick={onClose} asChild>

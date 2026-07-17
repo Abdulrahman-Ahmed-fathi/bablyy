@@ -28,7 +28,7 @@ export function FeaturedProductsSection({ products }: FeaturedProductsSectionPro
         <div className="mb-14 flex flex-col items-center justify-between gap-6 md:flex-row md:items-end">
           <div className="text-center md:text-left">
             <p className="text-xs uppercase tracking-[0.3em] text-brown/70">Featured</p>
-            <h2 className="mt-3 font-display text-3xl md:text-5xl">Our Finest Selections</h2>
+            <h2 className="mt-3 font-serif text-3xl text-brown md:text-5xl">Our Finest Selections</h2>
           </div>
           <Button variant="outline" asChild className="shrink-0">
             <Link href="/products">View All Products</Link>
@@ -87,7 +87,7 @@ export function FeaturedProductsSection({ products }: FeaturedProductsSectionPro
           )}
         </div>
 
-        <div className="mt-12 text-center md:hidden">
+        <div className="mt-12 text-center md:hidden ">
           <Button asChild>
             <Link href="/products">View All Products</Link>
           </Button>

@@ -1,8 +1,20 @@
+import { NextResponse } from "next/server";
 import NextAuth from "next-auth";
 import { authConfig } from "@/lib/auth.config";
+import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
 
-export default NextAuth(authConfig).auth;
+export default NextAuth(authConfig).auth((req) => {
+  if (req.nextUrl.pathname === "/api/auth/callback/credentials" && req.method === "POST") {
+    const ip = getClientIp(req);
+    if (!checkRateLimit(`login:${ip}`, 5, 15 * 60 * 1000)) {
+      return NextResponse.json(
+        { error: "Too many login attempts. Please try again in 15 minutes." },
+        { status: 429 }
+      );
+    }
+  }
+});
 
 export const config = {
-  matcher: ["/admin/:path*", "/login"],
+  matcher: ["/admin/:path*", "/login", "/api/auth/callback/credentials"],
 };

@@ -47,10 +47,10 @@ export default function OrderSuccessClient() {
         </svg>
       </motion.div>
 
-      <h1 className="font-display text-4xl md:text-5xl">Order Confirmed</h1>
+      <h1 className="font-body text-4xl md:text-5xl">Order Confirmed</h1>
 
       {orderNumber && (
-        <p className="mt-6 font-display text-2xl text-brown">{orderNumber}</p>
+        <p className="mt-6 font-body text-2xl text-brown">{orderNumber}</p>
       )}
 
       <p className="mx-auto mt-6 max-w-md text-black/70">

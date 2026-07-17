@@ -1,13 +1,90 @@
 "use client";
 
 import Link from "next/link";
+import { SafeImage } from "@/components/store/SafeImage";
 import { motion } from "framer-motion";
-import { Percent, Sparkles } from "lucide-react";
+import { ArrowRight, Sparkles  } from "lucide-react";
 import type { Offer } from "@prisma/client";
-import { Button } from "@/components/ui/button";
 
 interface OfferBannerProps {
-  offers: (Offer & { product?: { name: string; slug: string } | null })[];
+  offers: (Offer & {
+    product?: { name: string; slug: string; imageUrl: string } | null;
+  })[];
+}
+
+function Diamond() {
+  return <span className="h-1.5 w-1.5 shrink-0 rotate-45 bg-gold" />;
+}
+
+interface OfferCardProps {
+  title: string;
+  statLabel: string;
+  href: string;
+  ctaLabel: string;
+  imageUrl?: string | null;
+  featured?: boolean;
+}
+
+function OfferCard({ title, statLabel, href, ctaLabel, imageUrl, featured }: OfferCardProps) {
+  return (
+    <Link
+      href={href}
+      className={`group relative block overflow-hidden rounded-[28px] border border-gold/25 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-luxury-sm ${
+        featured ? "md:col-span-2" : ""
+      }`}
+    >
+      <div className={`flex h-full ${featured ? "min-h-[240px]" : "min-h-[220px]"}`}>
+        {/* Photo panel */}
+        <div className="relative w-[42%] shrink-0 overflow-hidden">
+          {imageUrl ? (
+            <SafeImage
+              src={imageUrl}
+              alt={title}
+              fill
+              className="object-cover transition-transform duration-700 group-hover:scale-105"
+              sizes="(max-width: 768px) 40vw, 20vw"
+            />
+          ) : (
+            <div className="relative flex h-full w-full items-center justify-center bg-gradient-to-br from-black via-[#3c2616] to-black">
+              <div
+                className="absolute inset-0 opacity-[0.06]"
+                style={{
+                  backgroundImage: "radial-gradient(circle, #ffffff 1px, transparent 1px)",
+                  backgroundSize: "18px 18px",
+                }}
+              />
+              
+              <Sparkles className="relative h-10 w-10 text-cream" />
+            </div>
+          )}
+        </div>
+
+        {/* Text panel with chevron notch */}
+        <div
+          className="relative -ml-4 flex flex-1 flex-col justify-center bg-cream px-8 py-8"
+          style={{
+            clipPath: "polygon(20px 0, 100% 0, 100% 100%, 20px 100%, 0 50%)",
+          }}
+        >
+          <h3 className="font-body text-2xl leading-tight text-brown md:text-3xl">
+            {title}
+          </h3>
+
+          <div className="mt-4 flex items-center gap-3">
+            <Diamond />
+            <span className="text-x font-bold uppercase tracking-[0.2em] text-red-900">
+              {statLabel}
+            </span>
+          </div>
+
+          <span className="mt-6 inline-flex w-fit items-center gap-2 text-x font-body uppercase tracking-[0.25em] text-black transition-colors group-hover:text-brown">
+            {ctaLabel}
+            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+          </span>
+        </div>
+      </div>
+    </Link>
+  );
 }
 
 export function OfferBanner({ offers }: OfferBannerProps) {
@@ -18,82 +95,52 @@ export function OfferBanner({ offers }: OfferBannerProps) {
 
   return (
     <section className="border-y border-cream-dark bg-cream">
-      <div className="mx-auto max-w-container space-y-4 px-4 py-8 lg:px-8">
-        {sitewide.map((offer) => (
-          <motion.div
-            key={offer.id}
-            initial={{ opacity: 0, y: 12 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="relative overflow-hidden rounded-2xl bg-black px-6 py-8 text-cream shadow-luxury md:px-10 md:py-10"
-          >
-            <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-brown/30 blur-2xl" />
-            <div className="relative flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
-              <div className="flex items-start gap-5">
-                <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full border border-cream/20 bg-brown/40">
-                  <Sparkles className="h-7 w-7 text-cream" />
-                </div>
-                <div>
-                  <p className="text-xs uppercase tracking-[0.25em] text-cream/60">Sitewide Promotion</p>
-                  <h3 className="mt-1 font-display text-2xl md:text-3xl">{offer.title}</h3>
-                  {offer.description && (
-                    <p className="mt-2 max-w-lg text-sm text-cream/75">{offer.description}</p>
-                  )}
-                </div>
-              </div>
-              <div className="flex items-center gap-4">
-                <div className="text-center">
-                  <p className="font-display text-5xl leading-none text-cream md:text-6xl">
-                    {offer.discountPct}%
-                  </p>
-                  <p className="mt-1 text-xs uppercase tracking-widest text-cream/60">OFF</p>
-                </div>
-                <Button variant="ghost" className="border border-cream/30 text-cream hover:bg-cream/10" asChild>
-                  <Link href="/products">Shop Now</Link>
-                </Button>
-              </div>
-            </div>
-          </motion.div>
-        ))}
+      <div className="mx-auto max-w-container px-4 py-12 lg:px-8 lg:py-16">
+        <div className="mb-10 text-center">
+          <p className="text-x uppercase font-serif tracking-[0.3em] text-brown/70">Limited Time Only</p>
+          <h2 className="mt-3 font-serif text-3xl text-brown md:text-5xl">Exclusive Offers</h2>
+        </div>
 
-        {productOffers.length > 0 && (
-          <div className="grid gap-4 md:grid-cols-2">
-            {productOffers.map((offer, i) => (
-              <motion.div
-                key={offer.id}
-                initial={{ opacity: 0, y: 12 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.05 }}
-                className="flex items-center justify-between gap-4 rounded-2xl border border-cream-dark bg-white p-6 shadow-sm"
-              >
-                <div className="flex items-center gap-4">
-                  <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-brown/10 text-brown">
-                    <Percent className="h-6 w-6" />
-                  </div>
-                  <div>
-                    <p className="text-xs uppercase tracking-widest text-black/50">Product Offer</p>
-                    <h4 className="font-display text-xl">{offer.title}</h4>
-                    {offer.description && (
-                      <p className="mt-1 text-sm text-black/60">{offer.description}</p>
-                    )}
-                  </div>
-                </div>
-                <div className="text-right">
-                  <p className="font-display text-3xl text-brown">{offer.discountPct}%</p>
-                  {offer.product?.slug && (
-                    <Link
-                      href={`/products/${offer.product.slug}`}
-                      className="mt-1 inline-block text-sm text-brown underline-offset-4 hover:underline"
-                    >
-                      {offer.product.name}
-                    </Link>
-                  )}
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        )}
+        <div className="grid gap-5  sm:grid-cols-2 lg:grid-cols-3">
+          {sitewide.map((offer, i) => (
+            <motion.div
+              key={offer.id}
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.06 }}
+              className="sm:col-span-2 lg:col-span-3 "
+            >
+              <OfferCard
+                title={offer.title}
+                statLabel={`${offer.discountPct}% Off · Sitewide`}
+                href="/products"
+                ctaLabel="Shop Now"
+                imageUrl={null}
+                featured
+              />
+            </motion.div>
+          ))}
+
+          {productOffers.map((offer, i) => (
+            <motion.div
+              key={offer.id}
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.06 }}
+            >
+              <OfferCard
+                title={offer.product?.name || offer.title}
+                statLabel={`${offer.discountPct}% Off`}
+                href={offer.product?.slug ? `/products/${offer.product.slug}` : "/products"}
+                ctaLabel="View Offer"
+                imageUrl={offer.product?.imageUrl}
+                
+              />
+            </motion.div>
+          ))}
+        </div>
       </div>
     </section>
   );

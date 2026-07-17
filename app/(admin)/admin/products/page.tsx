@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
+import { SafeImage } from "@/components/store/SafeImage";
 import toast from "react-hot-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,10 +24,14 @@ interface Product {
   price: number;
   stock: number;
   isFeatured: boolean;
+  isBestSeller: boolean;
+  isNew: boolean;
   isActive: boolean;
   imageUrl: string;
   category: { name: string } | null;
 }
+
+type ToggleField = "isFeatured" | "isBestSeller" | "isNew" | "isActive";
 
 export default function AdminProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -48,7 +52,7 @@ export default function AdminProductsPage() {
     fetchProducts();
   }, [fetchProducts]);
 
-  const toggleField = async (id: string, field: "isFeatured" | "isActive", value: boolean) => {
+  const toggleField = async (id: string, field: ToggleField, value: boolean) => {
     const res = await fetch(`/api/admin/products/${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
@@ -58,6 +62,8 @@ export default function AdminProductsPage() {
       setProducts((prev) =>
         prev.map((p) => (p.id === id ? { ...p, [field]: value } : p))
       );
+    } else {
+      toast.error("Failed to update product");
     }
   };
 
@@ -87,7 +93,7 @@ export default function AdminProductsPage() {
         </Button>
       </div>
 
-      <div className="rounded-lg border bg-white">
+      <div className="overflow-x-auto rounded-lg border bg-white">
         <Table>
           <TableHeader>
             <TableRow>
@@ -97,21 +103,23 @@ export default function AdminProductsPage() {
               <TableHead>Price</TableHead>
               <TableHead>Stock</TableHead>
               <TableHead>Featured</TableHead>
+              <TableHead>Best Seller</TableHead>
+              <TableHead>New</TableHead>
               <TableHead>Active</TableHead>
               <TableHead>Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {loading ? (
-              <TableRow><TableCell colSpan={8}>Loading...</TableCell></TableRow>
+              <TableRow><TableCell colSpan={10}>Loading...</TableCell></TableRow>
             ) : products.length === 0 ? (
-              <TableRow><TableCell colSpan={8} className="text-center text-gray-500">No products</TableCell></TableRow>
+              <TableRow><TableCell colSpan={10} className="text-center text-gray-500">No products</TableCell></TableRow>
             ) : (
               products.map((p) => (
                 <TableRow key={p.id}>
                   <TableCell>
                     <div className="relative h-12 w-10 overflow-hidden bg-gray-100">
-                      <Image src={p.imageUrl} alt="" fill className="object-cover" sizes="40px" />
+                      <SafeImage src={p.imageUrl} alt="" fill className="object-cover" sizes="40px" />
                     </div>
                   </TableCell>
                   <TableCell className="font-medium">{p.name}</TableCell>
@@ -122,9 +130,15 @@ export default function AdminProductsPage() {
                     <Switch checked={p.isFeatured} onCheckedChange={(v) => toggleField(p.id, "isFeatured", v)} />
                   </TableCell>
                   <TableCell>
+                    <Switch checked={p.isBestSeller} onCheckedChange={(v) => toggleField(p.id, "isBestSeller", v)} />
+                  </TableCell>
+                  <TableCell>
+                    <Switch checked={p.isNew} onCheckedChange={(v) => toggleField(p.id, "isNew", v)} />
+                  </TableCell>
+                  <TableCell>
                     <Switch checked={p.isActive} onCheckedChange={(v) => toggleField(p.id, "isActive", v)} />
                   </TableCell>
-                  <TableCell className="space-x-2">
+                  <TableCell className="space-x-2 whitespace-nowrap">
                     <Link href={`/admin/products/${p.id}/edit`} className="text-brown hover:underline">Edit</Link>
                     <button onClick={() => deleteProduct(p.id)} className="text-red-600 hover:underline">Delete</button>
                   </TableCell>
