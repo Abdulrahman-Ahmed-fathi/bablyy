@@ -56,7 +56,7 @@ export default function WishlistClient() {
 
   return (
     <div className="mx-auto max-w-container px-4 py-12 lg:px-8">
-      <h1 className="mb-12 font-display text-4xl md:text-5xl">Your Wishlist</h1>
+      <h1 className="mb-12 font-body text-4xl md:text-5xl">Your Wishlist</h1>
 
       {products.length === 0 ? (
         <div className="py-20 text-center">

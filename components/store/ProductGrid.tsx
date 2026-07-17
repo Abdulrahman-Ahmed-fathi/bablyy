@@ -9,7 +9,7 @@ export function ProductGrid({ products }: ProductGridProps) {
   if (products.length === 0) {
     return (
       <div className="py-20 text-center">
-        <h3 className="font-display text-2xl">No perfumes found</h3>
+        <h3 className="font-body text-2xl">No perfumes found</h3>
         <p className="mt-2 text-black/60">
           Try adjusting your filters or{" "}
           <a href="/products" className="text-brown underline">

@@ -93,7 +93,7 @@ export function AdminSidebar({
     <>
       <aside className="hidden min-h-screen w-16 flex-col bg-yellow-950 text-white md:flex lg:w-64">
         <div className="border-b border-white/10 p-5">
-          <Link href="/admin" className="font-display text-lg lg:text-xl">
+          <Link href="/admin" className="font-body text-lg lg:text-xl">
             <span className="hidden lg:inline">Admin Dashboard</span>
             <span className="lg:hidden">M</span>
           </Link>

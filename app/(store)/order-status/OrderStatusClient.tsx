@@ -17,7 +17,7 @@ interface OrderLookupResult {
   status: OrderStatus;
   total: number;
   createdAt: string;
-  items: { name: string; quantity: number; price: number }[];
+  items: { name: string; size: string | null; quantity: number; price: number }[];
 }
 
 export default function OrderStatusClient() {
@@ -64,7 +64,7 @@ export default function OrderStatusClient() {
   return (
     <div className="mx-auto max-w-container px-4 py-16 lg:px-8 lg:py-24">
       <div className="mx-auto max-w-lg text-center">
-        <h1 className="font-display text-4xl md:text-5xl">Track Your Order</h1>
+        <h1 className="font-body text-4xl md:text-5xl">Track Your Order</h1>
         <p className="mt-4 text-black/60">Enter your order number to check the latest status.</p>
       </div>
 
@@ -87,7 +87,7 @@ export default function OrderStatusClient() {
       {order && (
         <div className="mx-auto mt-12 max-w-lg rounded-2xl border border-cream-dark bg-white p-8 shadow-luxury-sm">
           <div className="flex items-center justify-between">
-            <p className="font-display text-2xl text-brown">{order.orderNumber}</p>
+            <p className="font-body text-2xl text-brown">{order.orderNumber}</p>
             <OrderStatusBadge status={order.status} />
           </div>
           <p className="mt-2 text-sm text-black/50">
@@ -97,12 +97,15 @@ export default function OrderStatusClient() {
           <ul className="mt-8 space-y-2 border-t border-cream-dark pt-6 text-sm">
             {order.items.map((item, i) => (
               <li key={i} className="flex justify-between">
-                <span>{item.name} × {item.quantity}</span>
+                <span>
+                  {item.name}
+                  {item.size && ` (${item.size})`} × {item.quantity}
+                </span>
                 <span>{formatPrice(item.price * item.quantity)}</span>
               </li>
             ))}
           </ul>
-          <div className="mt-4 flex justify-between font-display text-xl">
+          <div className="mt-4 flex justify-between font-body text-xl">
             <span>Total</span>
             <span className="text-brown">{formatPrice(order.total)}</span>
           </div>

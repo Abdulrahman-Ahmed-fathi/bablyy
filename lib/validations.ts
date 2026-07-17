@@ -26,22 +26,25 @@ const imagePathSchema = z
     "Upload an image or provide a valid URL"
   );
 
-
 const optionalPositivePrice = z.preprocess((val) => {
   if (val === "" || val === null || val === undefined) return undefined;
   return val;
 }, z.coerce.number().positive("Compare price must be positive").optional());
 
-export const productSchema = z.object({
+export const productVariantSchema = z.object({
+  size: z.string().min(1, "Size is required"),
+  price: z.coerce.number().positive("Price must be positive"),
+  stock: z.coerce.number().int().min(0),
+  isDefault: z.boolean().default(false),
+});
+
+const productCoreSchema = z.object({
   name: z.string().min(2, "Name is required"),
   slug: z.string().min(2, "Slug is required"),
   description: z.string().min(10, "Description is required"),
-  price: z.coerce.number().positive("Price must be positive"),
   comparePrice: optionalPositivePrice,
   imageUrl: imagePathSchema,
   images: z.array(imagePathSchema).max(4).default([]),
-  stock: z.coerce.number().int().min(0),
-  volume: z.string().optional().nullable(),
   gender: z.enum(["Unisex", "Men", "Women"]).optional().nullable(),
   categoryId: z.string().optional().nullable(),
   notes: z
@@ -53,6 +56,8 @@ export const productSchema = z.object({
     .optional()
     .nullable(),
   isFeatured: z.boolean().default(false),
+  isBestSeller: z.boolean().default(false),
+  isNew: z.boolean().default(false),
   isActive: z.boolean().default(true),
 });
 
@@ -87,6 +92,9 @@ export const settingsSchema = z.object({
   heroImageUrl: z.string(),
   logoUrl: z.string(),
   showOffersSection: z.boolean().default(true),
+  aboutHeroImageUrl: z.string().default(""),
+  aboutGalleryImages: z.array(z.string()).max(6).default([]),
+  showAboutGallerySection: z.boolean().default(true),
 });
 
 export const contactSchema = z.object({
@@ -97,6 +105,7 @@ export const contactSchema = z.object({
 
 export const orderItemSchema = z.object({
   productId: z.string(),
+  variantId: z.string(),
   quantity: z.number().int().min(1),
 });
 
@@ -152,7 +161,10 @@ export const EGYPTIAN_GOVERNORATES = [
   "Sohag",
   "South Sinai",
 ] as const;
-
+export const productFormSchema = productCoreSchema;
+export const productSchema = productCoreSchema.extend({
+  variants: z.array(productVariantSchema).min(1, "Add at least one size"),
+});
 export type CheckoutFormData = z.infer<typeof checkoutSchema>;
 export type ProductFormData = z.infer<typeof productSchema>;
 export type OfferFormData = z.infer<typeof offerSchema>;

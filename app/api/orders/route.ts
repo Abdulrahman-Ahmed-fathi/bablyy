@@ -4,8 +4,7 @@ import { createOrderSchema } from "@/lib/validations";
 import { generateOrderNumber } from "@/lib/utils";
 import { sendOrderEmails } from "@/lib/email";
 import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
-import { getActiveSitewideOffer, getSiteSettings } from "@/lib/products";
-import { getProductDisplayPrice } from "@/lib/products";
+import { getActiveSitewideOffer, getSiteSettings, getVariantDisplayPrice } from "@/lib/products";
 
 export async function POST(request: NextRequest) {
   try {
@@ -35,7 +34,7 @@ export async function POST(request: NextRequest) {
         createdAt: { gte: fiveMinutesAgo },
         items: {
           every: {
-            productId: { in: data.items.map((i) => i.productId) },
+            variantId: { in: data.items.map((i) => i.variantId) },
           },
         },
       },
@@ -46,17 +45,21 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(recentOrder);
     }
 
-    const productIds = data.items.map((i) => i.productId);
+    const productIds = [...new Set(data.items.map((i) => i.productId))];
     const products = await prisma.product.findMany({
       where: { id: { in: productIds }, isActive: true },
-      include: { offers: { where: { isActive: true } } },
+      include: {
+        offers: { where: { isActive: true } },
+        variants: true,
+      },
     });
 
     const unavailable: string[] = [];
     for (const item of data.items) {
       const product = products.find((p) => p.id === item.productId);
-      if (!product || product.stock < item.quantity) {
-        unavailable.push(item.productId);
+      const variant = product?.variants.find((v) => v.id === item.variantId);
+      if (!product || !variant || variant.stock < item.quantity) {
+        unavailable.push(item.variantId);
       }
     }
 
@@ -70,11 +73,14 @@ export async function POST(request: NextRequest) {
     let subtotal = 0;
     const orderItems = data.items.map((item) => {
       const product = products.find((p) => p.id === item.productId)!;
-      const pricing = getProductDisplayPrice(product);
+      const variant = product.variants.find((v) => v.id === item.variantId)!;
+      const pricing = getVariantDisplayPrice(product, variant);
       const lineTotal = pricing.price * item.quantity;
       subtotal += lineTotal;
       return {
         productId: product.id,
+        variantId: variant.id,
+        size: variant.size,
         quantity: item.quantity,
         price: pricing.price,
         name: product.name,
@@ -97,6 +103,10 @@ export async function POST(request: NextRequest) {
 
     const order = await prisma.$transaction(async (tx) => {
       for (const item of data.items) {
+        await tx.productVariant.update({
+          where: { id: item.variantId },
+          data: { stock: { decrement: item.quantity } },
+        });
         await tx.product.update({
           where: { id: item.productId },
           data: { stock: { decrement: item.quantity } },

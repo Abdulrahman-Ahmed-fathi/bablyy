@@ -44,7 +44,7 @@ export default function CartPage() {
         (item) => !products.find((p: { id: string; isActive: boolean }) => p.id === item.productId && p.isActive)
       );
       if (invalid.length > 0) {
-        invalid.forEach((i) => removeItem(i.productId));
+        invalid.forEach((i) => removeItem(i.productId, i.variantId));
         toast.error("Some items are no longer available and were removed from your cart.");
       }
       setValidated(true);
@@ -91,7 +91,7 @@ export default function CartPage() {
             <AnimatePresence>
               {items.map((item) => (
                 <motion.div
-                  key={item.productId}
+                  key={`${item.productId}-${item.variantId}`}
                   layout
                   exit={{ opacity: 0, x: -50 }}
                   className="flex gap-6 border-b border-cream-dark pb-6"
@@ -109,12 +109,12 @@ export default function CartPage() {
                     <div>
                       <Link
                         href={`/products/${item.slug}`}
-                        className="font-display text-xl hover:text-brown"
+                        className="font-body text-xl hover:text-brown"
                       >
                         {item.name}
                       </Link>
-                      {item.volume && (
-                        <p className="text-xs text-black/50">{item.volume}</p>
+                      {item.size && (
+                        <p className="text-xs text-black/50">Size: {item.size}</p>
                       )}
                       <p className="mt-1 text-brown">{formatPrice(item.price)}</p>
                     </div>
@@ -123,7 +123,7 @@ export default function CartPage() {
                         <button
                           className="px-2 py-1"
                           onClick={() =>
-                            updateQuantity(item.productId, item.quantity - 1)
+                            updateQuantity(item.productId, item.variantId, item.quantity - 1)
                           }
                           aria-label="Decrease quantity"
                         >
@@ -133,7 +133,7 @@ export default function CartPage() {
                         <button
                           className="px-2 py-1"
                           onClick={() =>
-                            updateQuantity(item.productId, item.quantity + 1)
+                            updateQuantity(item.productId, item.variantId, item.quantity + 1)
                           }
                           aria-label="Increase quantity"
                         >
@@ -141,11 +141,11 @@ export default function CartPage() {
                         </button>
                       </div>
                       <div className="flex items-center gap-4">
-                        <span className="font-display">
+                        <span className="font-body">
                           {formatPrice(item.price * item.quantity)}
                         </span>
                         <button
-                          onClick={() => removeItem(item.productId)}
+                          onClick={() => removeItem(item.productId, item.variantId)}
                           className="text-red-600"
                           aria-label="Remove item"
                         >
@@ -162,7 +162,7 @@ export default function CartPage() {
           <div>
             <Card className="sticky top-24 rounded-2xl shadow-luxury-sm">
               <CardContent className="p-6">
-                <h2 className="font-display text-xl">Order Summary</h2>
+                <h2 className="font-body text-xl">Order Summary</h2>
                 <div className="mt-4 flex justify-between text-sm">
                   <span>Subtotal</span>
                   <span>{formatPrice(subtotal)}</span>
@@ -173,7 +173,7 @@ export default function CartPage() {
                     <span>-{formatPrice(discount)}</span>
                   </div>
                 )}
-                <div className="mt-4 flex justify-between border-t border-cream-dark pt-4 font-display text-xl">
+                <div className="mt-4 flex justify-between border-t border-cream-dark pt-4 font-body text-xl">
                   <span>Total</span>
                   <span className="text-brown">{formatPrice(total)}</span>
                 </div>

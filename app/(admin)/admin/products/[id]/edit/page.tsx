@@ -10,6 +10,7 @@ export default async function EditProductPage({
 }) {
   const product = await prisma.product.findUnique({
     where: { id: params.id },
+    include: { variants: { orderBy: { sortOrder: "asc" } } },
   });
 
   if (!product) notFound();
@@ -25,16 +26,21 @@ export default async function EditProductPage({
           name: product.name,
           slug: product.slug,
           description: product.description,
-          price: product.price,
           comparePrice: product.comparePrice ?? undefined,
           imageUrl: product.imageUrl,
           images: parseJsonArray(product.images),
-          stock: product.stock,
-          volume: product.volume,
           gender: product.gender as "Unisex" | "Men" | "Women" | undefined,
           categoryId: product.categoryId || "",
           notes,
+          variants: product.variants.map((v) => ({
+            size: v.size,
+            price: v.price,
+            stock: v.stock,
+            isDefault: v.isDefault,
+          })),
           isFeatured: product.isFeatured,
+          isBestSeller: product.isBestSeller,
+          isNew: product.isNew,
           isActive: product.isActive,
         }}
       />
