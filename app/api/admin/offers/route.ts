@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { offerSchema } from "@/lib/validations";
+import { revalidatePath } from "next/cache";
 
 export async function GET() {
   const session = await auth();
@@ -45,6 +46,9 @@ export async function POST(request: NextRequest) {
         isActive: data.isActive,
       },
     });
+
+    revalidatePath("/", "layout");
+
     return NextResponse.json(offer, { status: 201 });
   } catch {
     return NextResponse.json({ error: "Failed to create offer" }, { status: 500 });

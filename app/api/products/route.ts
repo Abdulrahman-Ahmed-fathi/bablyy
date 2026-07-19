@@ -4,7 +4,11 @@ import { getProducts } from "@/lib/products";
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = request.nextUrl;
+    const idsParam = searchParams.get("ids");
+    const ids = idsParam ? idsParam.split(",").filter(Boolean) : undefined;
+
     const products = await getProducts({
+      ids,
       category: searchParams.get("category") || undefined,
       gender: searchParams.get("gender") || undefined,
       search: searchParams.get("q") || undefined,

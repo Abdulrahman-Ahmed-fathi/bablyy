@@ -311,7 +311,6 @@ export function ProductForm({ initialData }: ProductFormProps) {
       <div className="space-y-3">
         <Label>Fragrance Notes</Label>
         <Input placeholder="Top notes (comma separated)" value={notes.top} onChange={(e) => setNotes({ ...notes, top: e.target.value })} />
-        <Input placeholder="Heart notes" value={notes.heart} onChange={(e) => setNotes({ ...notes, heart: e.target.value })} />
         <Input placeholder="Base notes" value={notes.base} onChange={(e) => setNotes({ ...notes, base: e.target.value })} />
       </div>
 

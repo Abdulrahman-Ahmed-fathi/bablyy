@@ -134,7 +134,8 @@ export async function getBestSellerProducts(limit = 8) {
 }
 
 export async function getProducts(filters?: {
-  category?: string;
+  ids?: string[];
+  category?: string | string[];
   gender?: string;
   search?: string;
   sort?: string;
@@ -143,8 +144,17 @@ export async function getProducts(filters?: {
 }) {
   const where: Record<string, unknown> = { isActive: true };
 
+  if (filters?.ids && filters.ids.length > 0) {
+    where.id = { in: filters.ids };
+  }
   if (filters?.category) {
-    where.category = { slug: filters.category };
+    if (Array.isArray(filters.category)) {
+      where.category = { slug: { in: filters.category } };
+    } else if (filters.category.includes(",")) {
+      where.category = { slug: { in: filters.category.split(",") } };
+    } else {
+      where.category = { slug: filters.category };
+    }
   }
   if (filters?.gender && filters.gender !== "All") {
     where.gender = filters.gender;

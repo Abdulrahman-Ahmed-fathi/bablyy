@@ -26,7 +26,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-const COLORS = ["#d97706", "#3b82f6", "#8b5cf6", "#10b981", "#ef4444", "#78716c"];
+const COLORS = ["#B58E3D", "#3D1C10", "#5D3A21", "#8C6239", "#A67C52", "#C4A484"];
 
 export default function AdminDashboardPage() {
   const [stats, setStats] = useState<{
@@ -100,8 +100,8 @@ export default function AdminDashboardPage() {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <div className="rounded-2xl border border-stone-200 bg-white p-6 shadow-sm">
-          <h2 className="mb-4 font-medium text-stone-900">Orders (Last 30 Days)</h2>
+        <div className="rounded-2xl border border-cream-dark/60 bg-white p-6 shadow-luxury-sm">
+          <h2 className="mb-4 font-body text-lg tracking-wide text-brown uppercase">Orders (Last 30 Days)</h2>
           <ResponsiveContainer width="100%" height={250}>
             <LineChart data={stats.ordersPerDay}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e7e5e4" />
@@ -113,8 +113,8 @@ export default function AdminDashboardPage() {
           </ResponsiveContainer>
         </div>
 
-        <div className="rounded-2xl border border-stone-200 bg-white p-6 shadow-sm">
-          <h2 className="mb-4 font-medium text-stone-900">Orders by Status</h2>
+        <div className="rounded-2xl border border-cream-dark/60 bg-white p-6 shadow-luxury-sm">
+          <h2 className="mb-4 font-body text-lg tracking-wide text-brown uppercase">Orders by Status</h2>
           <ResponsiveContainer width="100%" height={250}>
             <PieChart>
               <Pie
@@ -136,9 +136,9 @@ export default function AdminDashboardPage() {
         </div>
       </div>
 
-      <div className="overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-sm">
-        <div className="border-b border-stone-100 p-4">
-          <h2 className="font-medium text-stone-900">Recent Orders</h2>
+      <div className="overflow-hidden rounded-2xl border border-cream-dark/60 bg-white shadow-luxury-sm">
+        <div className="border-b border-stone-100 px-6 py-4 bg-white">
+          <h2 className="font-body text-lg tracking-wide text-brown uppercase">Recent Orders</h2>
         </div>
         <Table>
           <TableHeader>

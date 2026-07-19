@@ -138,6 +138,8 @@ model SiteSettings {
   aboutHeroImageUrl       String   @default("")
   aboutGalleryImages      String   @default("[]")
   showAboutGallerySection Boolean  @default(true)
+  showMapSection          Boolean  @default(true)
+  mapLocations            String   @default("[]")
 
   updatedAt         DateTime @updatedAt
 }

@@ -95,6 +95,16 @@ export const settingsSchema = z.object({
   aboutHeroImageUrl: z.string().default(""),
   aboutGalleryImages: z.array(z.string()).max(6).default([]),
   showAboutGallerySection: z.boolean().default(true),
+  showMapSection: z.boolean().default(true),
+  mapLocations: z.array(
+    z.object({
+      id: z.string(),
+      name: z.string().min(1, "Name is required"),
+      address: z.string().min(1, "Address is required"),
+      lat: z.coerce.number(),
+      lng: z.coerce.number(),
+    })
+  ).default([]),
 });
 
 export const contactSchema = z.object({
