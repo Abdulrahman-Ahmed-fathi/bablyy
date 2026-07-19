@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { categorySchema } from "@/lib/validations";
+import { revalidatePath } from "next/cache";
 
 export async function PATCH(
   request: NextRequest,
@@ -23,6 +24,9 @@ export async function PATCH(
       where: { id: params.id },
       data: parsed.data,
     });
+
+    revalidatePath("/", "layout");
+
     return NextResponse.json(category);
   } catch {
     return NextResponse.json({ error: "Failed to update category" }, { status: 500 });
@@ -48,6 +52,9 @@ export async function DELETE(
     }
 
     await prisma.category.delete({ where: { id: params.id } });
+
+    revalidatePath("/", "layout");
+
     return NextResponse.json({ deleted: true });
   } catch {
     return NextResponse.json({ error: "Failed to delete category" }, { status: 500 });

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { categorySchema } from "@/lib/validations";
+import { revalidatePath } from "next/cache";
 
 export async function GET() {
   const session = await auth();
@@ -34,6 +35,9 @@ export async function POST(request: NextRequest) {
     }
 
     const category = await prisma.category.create({ data: parsed.data });
+
+    revalidatePath("/", "layout");
+
     return NextResponse.json(category, { status: 201 });
   } catch {
     return NextResponse.json({ error: "Failed to create category" }, { status: 500 });

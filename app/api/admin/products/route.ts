@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { productSchema } from "@/lib/validations";
+import { revalidatePath } from "next/cache";
 
 export async function GET(request: NextRequest) {
   const session = await auth();
@@ -93,6 +94,9 @@ export async function POST(request: NextRequest) {
       },
       include: { variants: true },
     });
+
+    revalidatePath("/", "layout");
+
     return NextResponse.json(product, { status: 201 });
   } catch {
     return NextResponse.json({ error: "Failed to create product" }, { status: 500 });

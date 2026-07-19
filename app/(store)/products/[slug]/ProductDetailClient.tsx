@@ -8,6 +8,7 @@ import { Minus, Plus, Copy, Share2 } from "lucide-react";
 import { SafeImage } from "@/components/store/SafeImage";
 import { FragranceNotes } from "@/components/store/FragranceNotes";
 import { ProductCard } from "@/components/store/ProductCard";
+import { ProductCarousel } from "@/components/store/ProductCarousel";
 import { ProductSizeSelector } from "@/components/store/ProductSizeSelector";
 import { RecentlyViewed, addRecentlyViewed } from "@/components/store/RecentlyViewed";
 import { useCartStore } from "@/lib/cart";
@@ -262,25 +263,23 @@ export function ProductDetailClient({
         <Tabs defaultValue="description">
           <TabsList>
             <TabsTrigger value="description">Full Description</TabsTrigger>
-            <TabsTrigger value="care">Care Instructions</TabsTrigger>
           </TabsList>
           <TabsContent value="description" className="mt-6 leading-relaxed">
             {product.description}
-          </TabsContent>
-          <TabsContent value="care" className="mt-6 leading-relaxed text-black/70">
-            Store your fragrance in a cool, dry place away from direct sunlight. Apply to pulse points and avoid rubbing after application.
           </TabsContent>
         </Tabs>
       </div>
 
       {related.length > 0 && (
-        <section className="mt-16">
-          <h2 className="mb-8 font-body text-2xl">You May Also Like</h2>
-          <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
+        <section className="mt-16 border-t border-cream-dark/30 pt-16">
+          <h2 className="mb-8 font-body text-2xl text-brown">You May Also Like</h2>
+          <ProductCarousel>
             {related.map((p, i) => (
-              <ProductCard key={p.id} product={p} index={i} />
+              <div key={p.id} className="w-[260px] shrink-0 snap-start sm:w-[280px]">
+                <ProductCard product={p} index={i} />
+              </div>
             ))}
-          </div>
+          </ProductCarousel>
         </section>
       )}
 

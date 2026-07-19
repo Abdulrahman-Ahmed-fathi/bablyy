@@ -27,16 +27,19 @@ function AnimatedNumber({ value, prefix = "", suffix = "" }: { value: number; pr
 export function StatsCard({ title, value, prefix, suffix, accent = "default" }: StatsCardProps) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 15 }}
       animate={{ opacity: 1, y: 0 }}
-      className={`rounded-2xl border p-6 shadow-sm ${
+      transition={{ duration: 0.3 }}
+      className={`rounded-2xl border p-6 shadow-luxury-sm transition-all duration-200 hover:shadow-luxury ${
         accent === "amber"
-          ? "border-amber-200 bg-amber-50"
-          : "border-stone-200 bg-white"
+          ? "border-gold/30 bg-gold/5"
+          : "border-cream-dark/60 bg-white"
       }`}
     >
-      <p className={`text-sm ${accent === "amber" ? "text-amber-800" : "text-stone-500"}`}>{title}</p>
-      <p className={`mt-2 text-3xl font-semibold ${accent === "amber" ? "text-amber-900" : "text-stone-900"}`}>
+      <p className={`text-xs font-semibold uppercase tracking-wider ${accent === "amber" ? "text-amber-800" : "text-stone-400"}`}>
+        {title}
+      </p>
+      <p className={`mt-3 font-body text-4xl font-light tracking-wide ${accent === "amber" ? "text-amber-950" : "text-brown"}`}>
         <AnimatedNumber value={value} prefix={prefix} suffix={suffix} />
       </p>
     </motion.div>

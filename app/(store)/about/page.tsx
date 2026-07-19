@@ -37,6 +37,13 @@ export default async function AboutPage() {
       galleryImages={parseJsonArray(settings.aboutGalleryImages)}
       showGallerySection={settings.showAboutGallerySection}
       instagramUrl={settings.instagram}
+      phone={settings.phone}
+      email={settings.email}
+      address={settings.address}
+      facebookUrl={settings.facebook}
+      whatsapp={settings.whatsapp}
+      showMapSection={settings.showMapSection}
+      mapLocations={parseJsonArray(settings.mapLocations) as unknown as { id: string; name: string; address: string; lat: number; lng: number; }[]}
     />
   );
 }

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { offerSchema } from "@/lib/validations";
+import { revalidatePath } from "next/cache";
 
 export async function PATCH(
   request: NextRequest,
@@ -36,6 +37,9 @@ export async function PATCH(
         ...(data.isActive !== undefined && { isActive: data.isActive }),
       },
     });
+
+    revalidatePath("/", "layout");
+
     return NextResponse.json(offer);
   } catch {
     return NextResponse.json({ error: "Failed to update offer" }, { status: 500 });
@@ -53,6 +57,9 @@ export async function DELETE(
 
   try {
     await prisma.offer.delete({ where: { id: params.id } });
+
+    revalidatePath("/", "layout");
+
     return NextResponse.json({ deleted: true });
   } catch {
     return NextResponse.json({ error: "Failed to delete offer" }, { status: 500 });

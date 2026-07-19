@@ -22,6 +22,11 @@ const AboutGallery = dynamic(
   { ssr: false, loading: () => <div className="h-[650px] w-full skeleton rounded-[36px]" /> }
 );
 
+const StoreMap = dynamic(
+  () => import("@/components/store/StoreMap").then((m) => m.StoreMap),
+  { ssr: false, loading: () => <div className="h-[450px] w-full skeleton rounded-[32px]" /> }
+);
+
 
 type ContactFormData = z.infer<typeof contactSchema>;
 
@@ -32,6 +37,19 @@ interface AboutContentProps {
   galleryImages: string[];
   showGallerySection: boolean;
   instagramUrl: string;
+  phone: string;
+  email: string;
+  address: string;
+  facebookUrl: string;
+  whatsapp: string;
+  showMapSection: boolean;
+  mapLocations: {
+    id: string;
+    name: string;
+    address: string;
+    lat: number;
+    lng: number;
+  }[];
 }
 
 export function AboutContent({
@@ -41,6 +59,13 @@ export function AboutContent({
   galleryImages,
   showGallerySection,
   instagramUrl,
+  phone,
+  email,
+  address,
+  facebookUrl,
+  whatsapp,
+  showMapSection,
+  mapLocations,
 }: AboutContentProps) {
   const [loading, setLoading] = useState(false);
 
@@ -229,15 +254,85 @@ export function AboutContent({
       <section className="bg-cream section-padding">
         <div className="mx-auto max-w-container px-4 lg:px-8">
           <div className="mx-auto grid max-w-4xl gap-10 overflow-hidden rounded-3xl border border-cream-dark bg-white shadow-luxury md:grid-cols-2">
-            <div className="flex flex-col justify-center bg-[#241811] p-8 text-cream md:p-10">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full border border-gold/30 bg-brown/40">
-                <Mail className="h-5 w-5 text-gold" />
+            <div className="flex flex-col justify-between bg-[#241811] p-8 text-cream md:p-10">
+              <div>
+                <div className="flex h-12 w-12 items-center justify-center rounded-full border border-gold/30 bg-brown/40">
+                  <Mail className="h-5 w-5 text-gold" />
+                </div>
+                <h2 className="mt-6 font-display text-3xl">Get in Touch</h2>
+                <p className="mt-3 text-sm leading-relaxed text-cream/70">
+                  Have a question, or need help choosing your signature scent? Our team is happy
+                  to help you find the right fragrance.
+                </p>
               </div>
-              <h2 className="mt-6 font-display text-3xl">Get in Touch</h2>
-              <p className="mt-3 text-sm leading-relaxed text-cream/70">
-                Have a question, or need help choosing your signature scent? Our team is happy
-                to help you find the right fragrance.
-              </p>
+
+              {/* Dynamic Contact details */}
+              <div className="mt-8 space-y-4 border-t border-gold/20 pt-8">
+                {phone && (
+                  <div className="flex items-center gap-3 text-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="shrink-0"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                    <a href={`tel:${phone}`} className="hover:text-gold transition-colors">
+                      {phone}
+                    </a>
+                  </div>
+                )}
+                {email && (
+                  <div className="flex items-center gap-3 text-sm">
+                    <Mail className="h-4.5 w-4.5 text-gold shrink-0" />
+                    <a href={`mailto:${email}`} className="hover:text-gold transition-colors">
+                      {email}
+                    </a>
+                  </div>
+                )}
+                {address && (
+                  <div className="flex items-start gap-3 text-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="shrink-0 mt-0.5"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                    <span className="text-cream/80">{address}</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Social links */}
+              {(instagramUrl || facebookUrl || whatsapp) && (
+                <div className="mt-8 border-t border-gold/20 pt-6">
+                  <p className="text-xs uppercase tracking-wider text-gold font-semibold mb-3">Connect With Us</p>
+                  <div className="flex items-center gap-4">
+                    {instagramUrl && (
+                      <a
+                        href={instagramUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex h-9 w-9 items-center justify-center rounded-full border border-gold/20 bg-brown/20 text-cream hover:bg-gold hover:text-[#241811] transition-all duration-300"
+                        title="Instagram"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
+                      </a>
+                    )}
+                    {facebookUrl && (
+                      <a
+                        href={facebookUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex h-9 w-9 items-center justify-center rounded-full border border-gold/20 bg-brown/20 text-cream hover:bg-gold hover:text-[#241811] transition-all duration-300"
+                        title="Facebook"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+                      </a>
+                    )}
+                    {whatsapp && (
+                      <a
+                        href={`https://wa.me/${whatsapp}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex h-9 w-9 items-center justify-center rounded-full border border-gold/20 bg-brown/20 text-cream hover:bg-gold hover:text-[#241811] transition-all duration-300"
+                        title="WhatsApp"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                      </a>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
 
             <div className="p-8 md:p-10">
@@ -269,6 +364,13 @@ export function AboutContent({
               </form>
             </div>
           </div>
+
+          {/* Map Section */}
+          {showMapSection && mapLocations.length > 0 && (
+            <div className="mx-auto max-w-4xl mt-12">
+              <StoreMap locations={mapLocations} />
+            </div>
+          )}
         </div>
       </section>
     </div>

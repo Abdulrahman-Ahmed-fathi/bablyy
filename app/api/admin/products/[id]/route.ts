@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { productSchema } from "@/lib/validations";
+import { revalidatePath } from "next/cache";
 
 export async function PATCH(
   request: NextRequest,
@@ -71,6 +72,9 @@ export async function PATCH(
       },
       include: { variants: true },
     });
+
+    revalidatePath("/", "layout");
+
     return NextResponse.json(product);
   } catch {
     return NextResponse.json({ error: "Failed to update product" }, { status: 500 });
@@ -96,10 +100,12 @@ export async function DELETE(
         where: { id: params.id },
         data: { isActive: false },
       });
+      revalidatePath("/", "layout");
       return NextResponse.json({ softDeleted: true });
     }
 
     await prisma.product.delete({ where: { id: params.id } });
+    revalidatePath("/", "layout");
     return NextResponse.json({ deleted: true });
   } catch {
     return NextResponse.json({ error: "Failed to delete product" }, { status: 500 });

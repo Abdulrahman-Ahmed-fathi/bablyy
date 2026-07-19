@@ -47,7 +47,9 @@ export function FilterSidebar({ categories, maxPrice }: FilterSidebarProps) {
     [router, searchParams]
   );
 
-  const currentCategory = searchParams.get("category");
+  const selectedCategories = searchParams.get("category")
+    ? searchParams.get("category")!.split(",").filter(Boolean)
+    : [];
   const currentGender = searchParams.get("gender") || "All";
   const currentSort = searchParams.get("sort") || "newest";
 
@@ -58,20 +60,31 @@ export function FilterSidebar({ categories, maxPrice }: FilterSidebarProps) {
       <div>
         <h3 className="mb-4 text-xs uppercase tracking-[0.2em] text-black/50">Categories</h3>
         <div className="space-y-3">
-          {categories.map((cat) => (
-            <div key={cat.id} className="flex items-center gap-2">
-              <Checkbox
-                id={cat.slug}
-                checked={currentCategory === cat.slug}
-                onCheckedChange={(checked) =>
-                  updateParams({ category: checked ? cat.slug : null })
-                }
-              />
-              <Label htmlFor={cat.slug} className="cursor-pointer text-sm">
-                {cat.name}
-              </Label>
-            </div>
-          ))}
+          {categories.map((cat) => {
+            const isChecked = selectedCategories.includes(cat.slug);
+            return (
+              <div key={cat.id} className="flex items-center gap-2">
+                <Checkbox
+                  id={cat.slug}
+                  checked={isChecked}
+                  onCheckedChange={(checked) => {
+                    let nextCats: string[];
+                    if (checked) {
+                      nextCats = [...selectedCategories, cat.slug];
+                    } else {
+                      nextCats = selectedCategories.filter((slug) => slug !== cat.slug);
+                    }
+                    updateParams({
+                      category: nextCats.length > 0 ? nextCats.join(",") : null,
+                    });
+                  }}
+                />
+                <Label htmlFor={cat.slug} className="cursor-pointer text-sm font-medium text-stone-700 hover:text-brown transition-colors">
+                  {cat.name}
+                </Label>
+              </div>
+            );
+          })}
         </div>
       </div>
 
