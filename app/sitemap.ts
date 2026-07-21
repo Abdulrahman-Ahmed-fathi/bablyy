@@ -3,13 +3,16 @@ import { prisma } from "@/lib/prisma";
 import { absoluteUrl } from "@/lib/site-url";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [products] = await Promise.all([
-    prisma.product.findMany({
+  let products: { slug: string; updatedAt: Date }[] = [];
+  try {
+    products = await prisma.product.findMany({
       where: { isActive: true },
       select: { slug: true, updatedAt: true },
       orderBy: { updatedAt: "desc" },
-    }),
-  ]);
+    });
+  } catch (error) {
+    console.error("Failed to fetch products for sitemap:", error);
+  }
 
   const staticRoutes: MetadataRoute.Sitemap = [
     { url: absoluteUrl("/"), changeFrequency: "daily", priority: 1 },
@@ -25,10 +28,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     changeFrequency: "weekly",
     priority: 0.8,
   }));
-
-  // Category filter URLs are excluded: /products?category=slug reuses the same
-  // listing template with thin/filtered content and would create duplicate-content
-  // signals versus individual product detail pages.
 
   return [...staticRoutes, ...productRoutes];
 }

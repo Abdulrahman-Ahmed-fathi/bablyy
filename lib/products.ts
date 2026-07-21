@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import type { Offer, Product, ProductVariant } from "@prisma/client";
+import type { Offer, Product, ProductVariant, SiteSettings } from "@prisma/client";
 import { getDiscountedPrice, isOfferActive } from "@/lib/utils";
 
 export type ProductWithCategory = Product & {
@@ -83,65 +83,114 @@ export function getProductDisplayPrice(
   };
 }
 
+const DEFAULT_SITE_SETTINGS = {
+  id: "singleton",
+  storeName: "Maison de Parfum",
+  tagline: "Scents that tell your story",
+  phone: "",
+  email: "",
+  address: "",
+  instagram: "",
+  facebook: "",
+  whatsapp: "",
+  aboutText: "",
+  heroTitle: "Discover Your Signature Scent",
+  heroSubtitle: "",
+  heroImageUrl: "",
+  logoUrl: "",
+  showOffersSection: true,
+  updatedAt: new Date(),
+  aboutGalleryImages: "[]",
+  aboutHeroImageUrl: "",
+  showAboutGallerySection: true,
+  mapLocations: "[]",
+  showMapSection: true,
+};
+
 export async function getActiveSitewideOffer(): Promise<Offer | null> {
-  const offers = await prisma.offer.findMany({
-    where: { isActive: true, productId: null },
-  });
-  return offers.find(isOfferActive) ?? null;
+  try {
+    const offers = await prisma.offer.findMany({
+      where: { isActive: true, productId: null },
+    });
+    return offers.find(isOfferActive) ?? null;
+  } catch (error) {
+    console.error("Error fetching sitewide offer:", error);
+    return null;
+  }
 }
 
 export async function getActiveOffers() {
-  const offers = await prisma.offer.findMany({
-    where: { isActive: true },
-    include: { product: { select: { name: true, slug: true, imageUrl: true } } },
-  });
-  return offers.filter(isOfferActive);
+  try {
+    const offers = await prisma.offer.findMany({
+      where: { isActive: true },
+      include: { product: { select: { name: true, slug: true, imageUrl: true } } },
+    });
+    return offers.filter(isOfferActive);
+  } catch (error) {
+    console.error("Error fetching active offers:", error);
+    return [];
+  }
 }
 
 export async function getSiteSettings() {
-  let settings = await prisma.siteSettings.findUnique({
-    where: { id: "singleton" },
-  });
-  if (!settings) {
-    settings = await prisma.siteSettings.create({ data: { id: "singleton" } });
+  try {
+    let settings = await prisma.siteSettings.findUnique({
+      where: { id: "singleton" },
+    });
+    if (!settings) {
+      settings = await prisma.siteSettings.create({ data: { id: "singleton" } });
+    }
+    return settings;
+  } catch (error) {
+    console.error("Error fetching site settings:", error);
+    return DEFAULT_SITE_SETTINGS as unknown as SiteSettings;
   }
-  return settings;
 }
 
 const variantInclude = { orderBy: { sortOrder: "asc" as const } };
 
 export async function getFeaturedProducts(limit = 6) {
-  const [products, sitewideOffer] = await Promise.all([
-    prisma.product.findMany({
-      where: { isActive: true, isFeatured: true },
-      include: {
-        category: { select: { id: true, name: true, slug: true } },
-        offers: { where: { isActive: true } },
-        variants: variantInclude,
-      },
-      take: limit,
-      orderBy: { createdAt: "desc" },
-    }),
-    getActiveSitewideOffer(),
-  ]);
-  return attachSitewideOffer(products, sitewideOffer);
+  try {
+    const [products, sitewideOffer] = await Promise.all([
+      prisma.product.findMany({
+        where: { isActive: true, isFeatured: true },
+        include: {
+          category: { select: { id: true, name: true, slug: true } },
+          offers: { where: { isActive: true } },
+          variants: variantInclude,
+        },
+        take: limit,
+        orderBy: { createdAt: "desc" },
+      }),
+      getActiveSitewideOffer(),
+    ]);
+    return attachSitewideOffer(products, sitewideOffer);
+  } catch (error) {
+    console.error("Error fetching featured products:", error);
+    return [];
+  }
 }
 
 export async function getBestSellerProducts(limit = 8) {
-  const [products, sitewideOffer] = await Promise.all([
-    prisma.product.findMany({
-      where: { isActive: true, isBestSeller: true },
-      include: {
-        category: { select: { id: true, name: true, slug: true } },
-        offers: { where: { isActive: true } },
-        variants: variantInclude,
-      },
-      take: limit,
-      orderBy: { createdAt: "desc" },
-    }),
-    getActiveSitewideOffer(),
-  ]);
-  return attachSitewideOffer(products, sitewideOffer);
+  try {
+    const [products, sitewideOffer] = await Promise.all([
+      prisma.product.findMany({
+        where: { isActive: true, isBestSeller: true },
+        include: {
+          category: { select: { id: true, name: true, slug: true } },
+          offers: { where: { isActive: true } },
+          variants: variantInclude,
+        },
+        take: limit,
+        orderBy: { createdAt: "desc" },
+      }),
+      getActiveSitewideOffer(),
+    ]);
+    return attachSitewideOffer(products, sitewideOffer);
+  } catch (error) {
+    console.error("Error fetching best seller products:", error);
+    return [];
+  }
 }
 
 export async function getProducts(filters?: {
@@ -189,41 +238,55 @@ export async function getProducts(filters?: {
   if (filters?.sort === "price-desc") orderBy = { price: "desc" };
   if (filters?.sort === "newest") orderBy = { createdAt: "desc" };
 
-  const [products, sitewideOffer] = await Promise.all([
-    prisma.product.findMany({
-      where,
-      include: {
-        category: { select: { id: true, name: true, slug: true } },
-        offers: { where: { isActive: true } },
-        variants: variantInclude,
-      },
-      orderBy,
-    }),
-    getActiveSitewideOffer(),
-  ]);
-  return attachSitewideOffer(products, sitewideOffer);
+  try {
+    const [products, sitewideOffer] = await Promise.all([
+      prisma.product.findMany({
+        where,
+        include: {
+          category: { select: { id: true, name: true, slug: true } },
+          offers: { where: { isActive: true } },
+          variants: variantInclude,
+        },
+        orderBy,
+      }),
+      getActiveSitewideOffer(),
+    ]);
+    return attachSitewideOffer(products, sitewideOffer);
+  } catch (error) {
+    console.error("Error fetching products:", error);
+    return [];
+  }
 }
 
-
 export async function getProductBySlug(slug: string) {
-  const [product, sitewideOffer] = await Promise.all([
-    prisma.product.findUnique({
-      where: { slug },
-      include: {
-        category: { select: { id: true, name: true, slug: true } },
-        offers: { where: { isActive: true } },
-        variants: variantInclude,
-      },
-    }),
-    getActiveSitewideOffer(),
-  ]);
-  if (!product) return null;
-  return attachSitewideOffer([product], sitewideOffer)[0];
+  try {
+    const [product, sitewideOffer] = await Promise.all([
+      prisma.product.findUnique({
+        where: { slug },
+        include: {
+          category: { select: { id: true, name: true, slug: true } },
+          offers: { where: { isActive: true } },
+          variants: variantInclude,
+        },
+      }),
+      getActiveSitewideOffer(),
+    ]);
+    if (!product) return null;
+    return attachSitewideOffer([product], sitewideOffer)[0];
+  } catch (error) {
+    console.error(`Error fetching product by slug ${slug}:`, error);
+    return null;
+  }
 }
 
 export async function getCategories() {
-  return prisma.category.findMany({
-    include: { _count: { select: { products: true } } },
-    orderBy: { name: "asc" },
-  });
-}
+  try {
+    return await prisma.category.findMany({
+      include: { _count: { select: { products: true } } },
+      orderBy: { name: "asc" },
+    });
+  } catch (error) {
+    console.error("Error fetching categories:", error);
+    return [];
+  }
+}
