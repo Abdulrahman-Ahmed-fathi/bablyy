@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import toast from "react-hot-toast";
@@ -14,6 +15,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { z } from "zod";
 import dynamic from "next/dynamic";
+import { STORE_MAP_ANCHOR } from "@/lib/store-map-url";
 
 
 
@@ -22,11 +24,12 @@ const AboutGallery = dynamic(
   { ssr: false, loading: () => <div className="h-[650px] w-full skeleton rounded-[36px]" /> }
 );
 
-const StoreMap = dynamic(
+import type { StoreMapProps } from "@/components/store/StoreMap";
+
+const StoreMap = dynamic<StoreMapProps>(
   () => import("@/components/store/StoreMap").then((m) => m.StoreMap),
   { ssr: false, loading: () => <div className="h-[450px] w-full skeleton rounded-[32px]" /> }
 );
-
 
 type ContactFormData = z.infer<typeof contactSchema>;
 
@@ -67,7 +70,26 @@ export function AboutContent({
   showMapSection,
   mapLocations,
 }: AboutContentProps) {
+  const searchParams = useSearchParams();
+  const locationParam = searchParams.get("location");
+  const mapSectionRef = useRef<HTMLDivElement>(null);
   const [loading, setLoading] = useState(false);
+
+  // Deep-link: scroll to map section when ?location= or #store-map is present
+  useEffect(() => {
+    const shouldScroll =
+      locationParam ||
+      (typeof window !== "undefined" && window.location.hash === `#${STORE_MAP_ANCHOR}`);
+
+    if (!shouldScroll) return;
+
+    // Delay to allow dynamic import / Leaflet to mount
+    const timer = setTimeout(() => {
+      mapSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 600);
+
+    return () => clearTimeout(timer);
+  }, [locationParam]);
 
   const {
     register,
@@ -367,8 +389,15 @@ export function AboutContent({
 
           {/* Map Section */}
           {showMapSection && mapLocations.length > 0 && (
-            <div className="mx-auto max-w-4xl mt-12">
-              <StoreMap locations={mapLocations} />
+            <div
+              id={STORE_MAP_ANCHOR}
+              ref={mapSectionRef}
+              className="mx-auto max-w-4xl mt-12 scroll-mt-8"
+            >
+              <StoreMap
+                locations={mapLocations}
+                initialLocationId={locationParam}
+              />
             </div>
           )}
         </div>

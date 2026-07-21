@@ -50,7 +50,7 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
       toast.error("This size is sold out");
       return;
     }
-    const variantPricing = getVariantDisplayPrice(product, variant);
+    const variantPricing = getVariantDisplayPrice(product, variant, true);
     addItem({
       productId: product.id,
       variantId: variant.id,

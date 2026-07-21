@@ -456,7 +456,7 @@ export default function AdminSettingsPage() {
                 </div>
               </div>
               <div className="flex justify-end gap-2 pt-2">
-                <Button type="button" variant="ghost" size="sm" onClick={handleCancelEdit}>
+                <Button type="button" variant="outline" size="sm" onClick={handleCancelEdit}>
                   Cancel
                 </Button>
                 <Button
@@ -464,7 +464,7 @@ export default function AdminSettingsPage() {
                   variant="default"
                   size="sm"
                   onClick={editingLocationId ? handleSaveEdit : handleAddLocation}
-                  className="bg-stone-900 text-white hover:bg-stone-800"
+                  className="bg-brown text-white hover:bg-brown-light"
                 >
                   {editingLocationId ? "Update Location" : "Add Location"}
                 </Button>
@@ -523,7 +523,7 @@ export default function AdminSettingsPage() {
         </div>
       </section>
 
-      <Button onClick={save} disabled={saving} className="bg-stone-900 hover:bg-stone-850">
+      <Button onClick={save} disabled={saving} className="bg-brown text-white hover:bg-brown-light">
         {saving ? "Saving..." : "Save Settings"}
       </Button>
     </div>

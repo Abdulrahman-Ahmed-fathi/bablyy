@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { SafeImage } from "@/components/store/SafeImage";
 import { motion, AnimatePresence } from "framer-motion";
@@ -14,12 +14,21 @@ interface CartDrawerProps {
   onClose: () => void;
 }
 
+interface SitewideOffer {
+  discountPct: number;
+}
+
 export function CartDrawer({ open, onClose }: CartDrawerProps) {
   const { items, updateQuantity, removeItem, getSubtotal } = useCartStore();
+  const [sitewideOffer, setSitewideOffer] = useState<SitewideOffer | null>(null);
 
   useEffect(() => {
     if (open) {
       document.body.style.overflow = "hidden";
+      fetch("/api/offers/sitewide")
+        .then((r) => r.json())
+        .then((data) => setSitewideOffer(data?.discountPct ? data : null))
+        .catch(() => {});
     } else {
       document.body.style.overflow = "";
     }
@@ -27,6 +36,12 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
       document.body.style.overflow = "";
     };
   }, [open]);
+
+  const subtotal = getSubtotal();
+  const discount = sitewideOffer
+    ? Math.round(subtotal * (sitewideOffer.discountPct / 100) * 100) / 100
+    : 0;
+  const total = Math.round((subtotal - discount) * 100) / 100;
 
   return (
     <AnimatePresence>
@@ -111,9 +126,19 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
 
             {items.length > 0 && (
               <div className="border-t border-cream-dark p-6">
-                <div className="mb-4 flex justify-between">
-                  <span className="text-sm uppercase tracking-wider">Subtotal</span>
-                  <span className="font-body text-xl">{formatPrice(getSubtotal())}</span>
+                <div className="mb-2 flex justify-between text-sm">
+                  <span className="uppercase tracking-wider">Subtotal</span>
+                  <span>{formatPrice(subtotal)}</span>
+                </div>
+                {discount > 0 && (
+                  <div className="mb-4 flex justify-between text-sm text-green-700">
+                    <span>Sitewide Discount ({sitewideOffer?.discountPct}%)</span>
+                    <span>-{formatPrice(discount)}</span>
+                  </div>
+                )}
+                <div className="mb-6 flex justify-between border-t border-cream-dark pt-4">
+                  <span className="text-sm uppercase tracking-wider font-semibold">Total</span>
+                  <span className="font-body text-xl text-brown">{formatPrice(total)}</span>
                 </div>
                 <div className="flex flex-col gap-3">
                   <Button variant="outline" onClick={onClose} asChild>

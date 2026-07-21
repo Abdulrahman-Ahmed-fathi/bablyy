@@ -20,21 +20,21 @@ export default function WishlistClient() {
         return;
       }
 
-      const res = await fetch("/api/products");
+      const res = await fetch(`/api/products?ids=${productIds.join(",")}`);
       if (!res.ok) {
         setLoaded(true);
         return;
       }
-      const all: ProductWithCategory[] = await res.json();
-      const activeIds = new Set(all.map((p) => p.id));
+      const found: ProductWithCategory[] = await res.json();
+      const foundIds = new Set(found.map((p) => p.id));
 
       // Silently drop any wishlist items that are no longer active/existing
-      const validIds = productIds.filter((id) => activeIds.has(id));
+      const validIds = productIds.filter((id) => foundIds.has(id));
       if (validIds.length !== productIds.length) {
         setAll(validIds);
       }
 
-      setProducts(all.filter((p) => validIds.includes(p.id)));
+      setProducts(found);
       setLoaded(true);
     }
     load();

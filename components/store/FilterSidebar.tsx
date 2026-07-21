@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useState } from "react";
+import { useCallback, useState, useEffect } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
@@ -34,6 +34,13 @@ export function FilterSidebar({ categories, maxPrice }: FilterSidebarProps) {
     Number(searchParams.get("minPrice") || 0),
     Number(searchParams.get("maxPrice") || maxPrice),
   ]);
+
+  useEffect(() => {
+    setPriceRange([
+      Number(searchParams.get("minPrice") || 0),
+      Number(searchParams.get("maxPrice") || maxPrice),
+    ]);
+  }, [searchParams, maxPrice]);
 
   const updateParams = useCallback(
     (updates: Record<string, string | null>) => {

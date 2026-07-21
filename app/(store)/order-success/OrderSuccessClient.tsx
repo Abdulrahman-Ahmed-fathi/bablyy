@@ -57,7 +57,7 @@ export default function OrderSuccessClient() {
         Thank you for your order. We have received it and will contact you shortly.
       </p>
       <p className="mx-auto mt-6 max-w-md text-black/70">
-        COPY this order number {orderNumber} to track your order.
+        Save this order number {orderNumber} to track your order.
       </p>
 
       {orderInfo.firstName && (

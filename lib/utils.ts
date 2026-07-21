@@ -27,7 +27,8 @@ export function generateOrderNumber(sequence: number): string {
   const now = new Date();
   const date = now.toISOString().slice(0, 10).replace(/-/g, "");
   const seq = String(sequence).padStart(4, "0");
-  return `ORD-${date}-${seq}`;
+  const rand = Math.random().toString(36).substring(2, 5).toUpperCase();
+  return `ORD-${date}-${seq}-${rand}`;
 }
 
 export function parseJsonArray(value: string): string[] {

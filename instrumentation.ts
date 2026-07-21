@@ -1,9 +1,12 @@
 export function register() {
   const required = [
-    "DATABASE_URL",
-    "NEXTAUTH_SECRET",
-    "NEXTAUTH_URL",
-  ];
+  "DATABASE_URL",
+  "NEXTAUTH_SECRET",
+  "NEXTAUTH_URL",
+  "CLOUDINARY_CLOUD_NAME",
+  "CLOUDINARY_API_KEY",
+  "CLOUDINARY_API_SECRET",
+];
 
   const missing = required.filter((key) => !process.env[key]);
 

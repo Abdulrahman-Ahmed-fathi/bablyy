@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { Mail, MailOpen, Trash2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -16,6 +17,7 @@ interface ContactMessage {
 }
 
 export default function AdminMessagesPage() {
+  const router = useRouter();
   const [messages, setMessages] = useState<ContactMessage[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -42,6 +44,7 @@ export default function AdminMessagesPage() {
       setMessages((prev) =>
         prev.map((message) => (message.id === id ? { ...message, isRead } : message))
       );
+      router.refresh();
     } else {
       toast.error("Failed to update message");
     }
@@ -59,6 +62,7 @@ export default function AdminMessagesPage() {
     if (res.ok) {
       setMessages((prev) => prev.filter((message) => message.id !== id));
       toast.success("Message deleted");
+      router.refresh();
     } else {
       toast.error("Failed to delete message");
     }

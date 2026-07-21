@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { OrderStatusBadge } from "@/components/admin/OrderStatusBadge";
 import { formatPrice } from "@/lib/utils";
@@ -50,6 +50,7 @@ interface OrderDetail {
 
 export default function OrderDetailPage() {
   const params = useParams();
+  const router = useRouter();
   const [order, setOrder] = useState<OrderDetail | null>(null);
 
   useEffect(() => {
@@ -69,6 +70,7 @@ export default function OrderDetailPage() {
       const updated = await res.json();
       setOrder((prev) => (prev ? { ...prev, status: updated.status } : prev));
       toast.success("Status updated");
+      router.refresh();
     } else {
       toast.error("Failed to update status");
     }
@@ -85,9 +87,7 @@ export default function OrderDetailPage() {
   return (
     <div className="space-y-6">
       <div className="no-print flex flex-wrap gap-3">
-        <Button variant="outline" asChild>
-          <a href={`tel:${order.phone}`}>Call Customer</a>
-        </Button>
+        
         <Button variant="outline" asChild>
           <a href={`https://wa.me/${order.phone.replace(/\D/g, "")}?text=${whatsappMsg}`} target="_blank" rel="noopener noreferrer">
             WhatsApp Customer

@@ -91,12 +91,13 @@ export function ProductDetailClient({
       toast.error("Out of stock");
       return;
     }
+    const catalogPricing = getVariantDisplayPrice(product, selectedVariant, true);
     addItem({
       productId: product.id,
       variantId: selectedVariant.id,
       size: selectedVariant.size,
       name: product.name,
-      price: pricing.price,
+      price: catalogPricing.price,
       imageUrl: product.imageUrl,
       slug: product.slug,
       stock: selectedVariant.stock,
