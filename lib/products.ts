@@ -8,9 +8,16 @@ export type ProductWithCategory = Product & {
   variants: ProductVariant[];
 };
 
-export function getActiveProductOffer(product: { offers?: Offer[] }): Offer | null {
+export function getActiveProductOffer(
+  product: { offers?: Offer[] },
+  excludeSitewide = false
+): Offer | null {
   const active = (product.offers || []).filter(isOfferActive);
   if (active.length === 0) return null;
+  if (excludeSitewide) {
+    // Only return product-specific offers (offers that have a productId)
+    return active.find((o) => o.productId !== null) || null;
+  }
   // Prefer a product-specific offer over a sitewide one if both are active.
   return active.find((o) => o.productId) || active[0];
 }
@@ -30,9 +37,10 @@ export function getDefaultVariant<T extends { isDefault: boolean }>(
 
 export function getVariantDisplayPrice(
   product: { offers?: Offer[] },
-  variant: { price: number }
+  variant: { price: number },
+  excludeSitewide = false
 ): { price: number; comparePrice: number | null; hasSale: boolean } {
-  const offer = getActiveProductOffer(product);
+  const offer = getActiveProductOffer(product, excludeSitewide);
   if (offer) {
     return {
       price: getDiscountedPrice(variant.price, offer.discountPct),
@@ -43,12 +51,15 @@ export function getVariantDisplayPrice(
   return { price: variant.price, comparePrice: null, hasSale: false };
 }
 
-export function getProductDisplayPrice(product: {
-  price: number;
-  comparePrice?: number | null;
-  offers?: Offer[];
-  variants?: { price: number; isDefault: boolean }[];
-}): {
+export function getProductDisplayPrice(
+  product: {
+    price: number;
+    comparePrice?: number | null;
+    offers?: Offer[];
+    variants?: { price: number; isDefault: boolean }[];
+  },
+  excludeSitewide = false
+): {
   price: number;
   comparePrice: number | null;
   hasSale: boolean;
@@ -57,7 +68,7 @@ export function getProductDisplayPrice(product: {
     product.variants?.find((v) => v.isDefault) || product.variants?.[0];
   const basePrice = defaultVariant ? defaultVariant.price : product.price;
 
-  const offer = getActiveProductOffer(product);
+  const offer = getActiveProductOffer(product, excludeSitewide);
   if (offer) {
     return {
       price: getDiscountedPrice(basePrice, offer.discountPct),
@@ -161,8 +172,8 @@ export async function getProducts(filters?: {
   }
   if (filters?.search) {
     where.OR = [
-      { name: { contains: filters.search } },
-      { description: { contains: filters.search } },
+      { name: { contains: filters.search, mode: "insensitive" } },
+      { description: { contains: filters.search, mode: "insensitive" } },
     ];
   }
   if (filters?.minPrice !== undefined || filters?.maxPrice !== undefined) {

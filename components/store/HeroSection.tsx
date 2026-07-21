@@ -51,7 +51,7 @@ export function HeroSection({ settings }: HeroSectionProps) {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.15 }}
-                className="inline-block rounded-full border border-gold/40 bg-gold/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.25em] text-gold"
+                className="inline-block rounded-full border border-[#f2c766] bg-brown/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.25em] text-cream "
               >
                 Each Perfume Is A Story
               </motion.span>

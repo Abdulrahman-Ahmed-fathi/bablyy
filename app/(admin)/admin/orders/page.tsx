@@ -72,7 +72,7 @@ export default function AdminOrdersPage() {
             onClick={() => setStatus(status === s ? "" : s)}
             className={`rounded-2xl border p-5 text-start shadow-sm transition-colors ${
               status === s
-                ? "border-stone-900 bg-stone-900 text-white"
+                ? "border-stone-900 bg-brown text-white"
                 : "border-stone-200 bg-white hover:border-stone-300"
             }`}
           >
@@ -90,7 +90,7 @@ export default function AdminOrdersPage() {
             onClick={() => setStatus(status === s ? "" : s)}
             className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
               status === s
-                ? "bg-stone-900 text-white"
+                ? "bg-brown text-white"
                 : "bg-stone-100 text-stone-600 hover:bg-stone-200"
             }`}
           >

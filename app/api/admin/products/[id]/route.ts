@@ -37,46 +37,81 @@ export async function PATCH(
       ? data.variants.reduce((sum, v) => sum + v.stock, 0)
       : undefined;
 
-    const product = await prisma.product.update({
-      where: { id: params.id },
-      data: {
-        ...(data.name !== undefined && { name: data.name }),
-        ...(data.slug !== undefined && { slug: data.slug }),
-        ...(data.description !== undefined && { description: data.description }),
-        ...(data.comparePrice !== undefined && { comparePrice: data.comparePrice }),
-        ...(data.imageUrl !== undefined && { imageUrl: data.imageUrl }),
-        ...(data.images !== undefined && { images: JSON.stringify(data.images) }),
-        ...(data.gender !== undefined && { gender: data.gender }),
-        ...(data.categoryId !== undefined && { categoryId: data.categoryId || null }),
-        ...(data.notes !== undefined && {
-          notes: data.notes ? JSON.stringify(data.notes) : null,
-        }),
-        ...(data.isFeatured !== undefined && { isFeatured: data.isFeatured }),
-        ...(data.isBestSeller !== undefined && { isBestSeller: data.isBestSeller }),
-        ...(data.isNew !== undefined && { isNew: data.isNew }),
-        ...(data.isActive !== undefined && { isActive: data.isActive }),
-        ...(primaryVariant !== undefined && { price: primaryVariant.price }),
-        ...(totalStock !== undefined && { stock: totalStock }),
-        ...(data.variants !== undefined && {
-          variants: {
-            deleteMany: {},
-            create: data.variants.map((v, i) => ({
-              size: v.size,
-              price: v.price,
-              stock: v.stock,
-              isDefault: v.isDefault,
-              sortOrder: i,
-            })),
-          },
-        }),
-      },
-      include: { variants: true },
+    const product = await prisma.$transaction(async (tx) => {
+      if (data.variants !== undefined) {
+        const existingVariants = await tx.productVariant.findMany({
+          where: { productId: params.id },
+        });
+
+        const incomingSizes = data.variants.map((v) => v.size);
+
+        // Delete variants not present in incoming request
+        const toDelete = existingVariants.filter((v) => !incomingSizes.includes(v.size));
+        if (toDelete.length > 0) {
+          await tx.productVariant.deleteMany({
+            where: { id: { in: toDelete.map((v) => v.id) } },
+          });
+        }
+
+        // Upsert/Create/Update remaining
+        for (let i = 0; i < data.variants.length; i++) {
+          const v = data.variants[i];
+          const match = existingVariants.find((ev) => ev.size === v.size);
+          if (match) {
+            await tx.productVariant.update({
+              where: { id: match.id },
+              data: {
+                price: v.price,
+                stock: v.stock,
+                isDefault: v.isDefault,
+                sortOrder: i,
+              },
+            });
+          } else {
+            await tx.productVariant.create({
+              data: {
+                productId: params.id,
+                size: v.size,
+                price: v.price,
+                stock: v.stock,
+                isDefault: v.isDefault,
+                sortOrder: i,
+              },
+            });
+          }
+        }
+      }
+
+      return tx.product.update({
+        where: { id: params.id },
+        data: {
+          ...(data.name !== undefined && { name: data.name }),
+          ...(data.slug !== undefined && { slug: data.slug }),
+          ...(data.description !== undefined && { description: data.description }),
+          ...(data.comparePrice !== undefined && { comparePrice: data.comparePrice }),
+          ...(data.imageUrl !== undefined && { imageUrl: data.imageUrl }),
+          ...(data.images !== undefined && { images: JSON.stringify(data.images) }),
+          ...(data.gender !== undefined && { gender: data.gender }),
+          ...(data.categoryId !== undefined && { categoryId: data.categoryId || null }),
+          ...(data.notes !== undefined && {
+            notes: data.notes ? JSON.stringify(data.notes) : null,
+          }),
+          ...(data.isFeatured !== undefined && { isFeatured: data.isFeatured }),
+          ...(data.isBestSeller !== undefined && { isBestSeller: data.isBestSeller }),
+          ...(data.isNew !== undefined && { isNew: data.isNew }),
+          ...(data.isActive !== undefined && { isActive: data.isActive }),
+          ...(primaryVariant !== undefined && { price: primaryVariant.price }),
+          ...(totalStock !== undefined && { stock: totalStock }),
+        },
+        include: { variants: true },
+      });
     });
 
     revalidatePath("/", "layout");
 
     return NextResponse.json(product);
-  } catch {
+  } catch (error) {
+    console.error("Product update failed:", error);
     return NextResponse.json({ error: "Failed to update product" }, { status: 500 });
   }
 }

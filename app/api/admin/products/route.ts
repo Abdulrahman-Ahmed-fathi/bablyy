@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
     const active = searchParams.get("active");
 
     const where: Record<string, unknown> = {};
-    if (search) where.name = { contains: search };
+    if (search) where.name = { contains: search, mode: "insensitive" };
     if (categoryId) where.categoryId = categoryId;
     if (active !== null && active !== undefined && active !== "") {
       where.isActive = active === "true";

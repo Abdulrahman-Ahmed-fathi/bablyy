@@ -103,14 +103,21 @@ export async function POST(request: NextRequest) {
 
     const order = await prisma.$transaction(async (tx) => {
       for (const item of data.items) {
-        await tx.productVariant.update({
+        const updatedVariant = await tx.productVariant.update({
           where: { id: item.variantId },
           data: { stock: { decrement: item.quantity } },
         });
-        await tx.product.update({
+        if (updatedVariant.stock < 0) {
+          throw new Error(`Insufficient stock for variant ${item.variantId}`);
+        }
+
+        const updatedProduct = await tx.product.update({
           where: { id: item.productId },
           data: { stock: { decrement: item.quantity } },
         });
+        if (updatedProduct.stock < 0) {
+          throw new Error(`Insufficient stock for product ${item.productId}`);
+        }
       }
 
       return tx.order.create({

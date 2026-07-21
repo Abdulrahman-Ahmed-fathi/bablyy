@@ -34,14 +34,15 @@ export default function CartPage() {
         setValidated(true);
         return;
       }
-      const res = await fetch("/api/products");
+      const ids = items.map((i) => i.productId).join(",");
+      const res = await fetch(`/api/products?ids=${ids}`);
       if (!res.ok) {
         setValidated(true);
         return;
       }
       const products = await res.json();
       const invalid = items.filter(
-        (item) => !products.find((p: { id: string; isActive: boolean }) => p.id === item.productId && p.isActive)
+        (item) => !products.find((p: { id: string }) => p.id === item.productId)
       );
       if (invalid.length > 0) {
         invalid.forEach((i) => removeItem(i.productId, i.variantId));

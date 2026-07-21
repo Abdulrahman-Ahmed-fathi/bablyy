@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { getSiteSettings } from "@/lib/products";
 import { parseJsonArray } from "@/lib/utils";
 import { absoluteUrl } from "@/lib/site-url";
@@ -30,20 +31,22 @@ export default async function AboutPage() {
   const settings = await getSiteSettings();
 
   return (
-    <AboutContent
-      aboutText={settings.aboutText}
-      storeName={settings.storeName}
-      heroImageUrl={settings.aboutHeroImageUrl || settings.heroImageUrl || null}
-      galleryImages={parseJsonArray(settings.aboutGalleryImages)}
-      showGallerySection={settings.showAboutGallerySection}
-      instagramUrl={settings.instagram}
-      phone={settings.phone}
-      email={settings.email}
-      address={settings.address}
-      facebookUrl={settings.facebook}
-      whatsapp={settings.whatsapp}
-      showMapSection={settings.showMapSection}
-      mapLocations={parseJsonArray(settings.mapLocations) as unknown as { id: string; name: string; address: string; lat: number; lng: number; }[]}
-    />
+    <Suspense fallback={null}>
+      <AboutContent
+        aboutText={settings.aboutText}
+        storeName={settings.storeName}
+        heroImageUrl={settings.aboutHeroImageUrl || settings.heroImageUrl || null}
+        galleryImages={parseJsonArray(settings.aboutGalleryImages)}
+        showGallerySection={settings.showAboutGallerySection}
+        instagramUrl={settings.instagram}
+        phone={settings.phone}
+        email={settings.email}
+        address={settings.address}
+        facebookUrl={settings.facebook}
+        whatsapp={settings.whatsapp}
+        showMapSection={settings.showMapSection}
+        mapLocations={parseJsonArray(settings.mapLocations) as unknown as { id: string; name: string; address: string; lat: number; lng: number; }[]}
+      />
+    </Suspense>
   );
-}
+}
