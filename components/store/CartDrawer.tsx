@@ -94,7 +94,7 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
                           <button
                             type="button"
                             onClick={() => updateQuantity(item.productId, item.variantId, item.quantity - 1)}
-                            className="rounded border p-1"
+                            className="flex h-9 w-9 items-center justify-center rounded border"
                             aria-label="Decrease quantity"
                           >
                             <Minus className="h-3 w-3" />
@@ -103,7 +103,7 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
                           <button
                             type="button"
                             onClick={() => updateQuantity(item.productId, item.variantId, item.quantity + 1)}
-                            className="rounded border p-1"
+                            className="flex h-9 w-9 items-center justify-center rounded border"
                             aria-label="Increase quantity"
                           >
                             <Plus className="h-3 w-3" />

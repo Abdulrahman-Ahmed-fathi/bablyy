@@ -13,6 +13,8 @@ import {
   MessageSquare,
   Settings,
   LogOut,
+  MoreHorizontal,
+  X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -26,8 +28,14 @@ const navItems = [
   { href: "/admin/settings", label: "Settings", icon: Settings },
 ];
 
+// Bottom bar keeps the highest-traffic sections directly reachable (plus the
+// two that carry live notification badges), everything else lives behind
+// "More" so icons stay large enough to tap reliably on small screens.
 const mobileItems = navItems.filter((i) =>
-  ["/admin/orders", "/admin/products", "/admin/messages", "/admin/settings"].includes(i.href)
+  ["/admin/orders", "/admin/products", "/admin/messages"].includes(i.href)
+);
+const moreItems = navItems.filter(
+  (i) => !["/admin/orders", "/admin/products", "/admin/messages"].includes(i.href)
 );
 
 interface AdminSidebarProps {
@@ -42,6 +50,7 @@ export function AdminSidebar({
   const pathname = usePathname();
   const [pendingCount, setPendingCount] = useState(initialPending);
   const [unreadMessages, setUnreadMessages] = useState(initialUnread);
+  const [moreOpen, setMoreOpen] = useState(false);
 
   useEffect(() => {
     setPendingCount(initialPending);
@@ -57,6 +66,15 @@ export function AdminSidebar({
       })
       .catch(() => {});
   }, [pathname]);
+
+  // Close the "More" sheet automatically on navigation.
+  useEffect(() => {
+    setMoreOpen(false);
+  }, [pathname]);
+
+  const isMoreActive = moreItems.some(
+    (item) => pathname === item.href || (item.href !== "/admin" && pathname.startsWith(item.href))
+  );
 
   const NavLink = ({ item }: { item: (typeof navItems)[0] }) => {
     const active =
@@ -115,7 +133,57 @@ export function AdminSidebar({
         </button>
       </aside>
 
-      <nav className="fixed inset-x-0 bottom-0 z-40 flex border-t border-white/5 bg-brown md:hidden shadow-luxury">
+      {/* "More" sheet — reveals Dashboard, Categories, Offers, Settings on mobile */}
+      {moreOpen && (
+        <>
+          <div
+            className="fixed inset-0 z-40 bg-black/40 md:hidden"
+            onClick={() => setMoreOpen(false)}
+          />
+          <div
+            className="fixed inset-x-0 bottom-[64px] z-50 rounded-t-2xl border-t border-white/10 bg-brown pb-[env(safe-area-inset-bottom)] shadow-luxury md:hidden"
+            role="dialog"
+            aria-label="More admin sections"
+          >
+            <div className="flex items-center justify-between border-b border-white/10 px-5 py-4">
+              <span className="text-sm font-medium uppercase tracking-wider text-white/70">
+                More
+              </span>
+              <button
+                type="button"
+                onClick={() => setMoreOpen(false)}
+                className="rounded-full p-1.5 text-white/60 hover:bg-white/5 hover:text-white"
+                aria-label="Close"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            <div className="grid grid-cols-2 gap-2 p-4">
+              {moreItems.map((item) => {
+                const Icon = item.icon;
+                const active =
+                  pathname === item.href ||
+                  (item.href !== "/admin" && pathname.startsWith(item.href));
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={cn(
+                      "flex items-center gap-3 rounded-xl px-4 py-3.5 text-sm font-medium transition-colors",
+                      active ? "bg-white/10 text-gold" : "text-white/70 hover:bg-white/5 hover:text-white"
+                    )}
+                  >
+                    <Icon className="h-5 w-5 shrink-0" />
+                    {item.label}
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        </>
+      )}
+
+      <nav className="fixed inset-x-0 bottom-0 z-40 flex border-t border-white/5 bg-brown pb-[env(safe-area-inset-bottom)] md:hidden shadow-luxury">
         {mobileItems.map((item) => {
           const Icon = item.icon;
           const active = pathname.startsWith(item.href);
@@ -143,6 +211,17 @@ export function AdminSidebar({
             </Link>
           );
         })}
+        <button
+          type="button"
+          onClick={() => setMoreOpen((v) => !v)}
+          className={cn(
+            "relative flex flex-1 flex-col items-center py-3 text-xs transition-colors duration-200",
+            isMoreActive || moreOpen ? "text-gold font-medium" : "text-white/50"
+          )}
+        >
+          <MoreHorizontal className="h-5 w-5 mb-1" />
+          More
+        </button>
       </nav>
     </>
   );

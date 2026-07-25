@@ -331,10 +331,10 @@ export function ProductForm({ initialData }: ProductFormProps) {
           {variants.map((variant, i) => (
             <div
               key={i}
-              className="grid grid-cols-[auto_1fr_1fr_1fr_auto] items-end gap-2 rounded-lg border border-stone-200 bg-white p-3"
+              className="grid grid-cols-2 gap-3 rounded-lg border border-stone-200 bg-white p-3 sm:grid-cols-[auto_1fr_1fr_1fr_auto] sm:items-end sm:gap-2"
             >
-              <div className="flex flex-col items-center gap-1">
-                <Label className="text-[10px] uppercase text-stone-400">Default</Label>
+              <div className="col-span-2 flex items-center gap-2 sm:col-span-1 sm:flex-col sm:items-center sm:gap-1">
+                <Label className="text-[10px] uppercase text-stone-400 sm:order-1">Default</Label>
                 <input
                   type="radio"
                   name="defaultVariant"
@@ -344,7 +344,7 @@ export function ProductForm({ initialData }: ProductFormProps) {
                   aria-label={`Set size ${i + 1} as default`}
                 />
               </div>
-              <div>
+              <div className="col-span-2 sm:col-span-1">
                 <Label className="text-xs">Size</Label>
                 <Input
                   placeholder="e.g. 50ml"
@@ -375,12 +375,13 @@ export function ProductForm({ initialData }: ProductFormProps) {
               <Button
                 type="button"
                 variant="outline"
-                size="icon"
                 disabled={variants.length === 1}
                 onClick={() => removeVariant(i)}
                 aria-label="Remove size"
+                className="col-span-2 sm:col-span-1 sm:w-10 sm:p-0"
               >
-                <Trash2 className="h-4 w-4 text-red-600" />
+                <Trash2 className="mr-2 h-4 w-4 text-red-600 sm:mr-0" />
+                <span className="sm:hidden">Remove Size</span>
               </Button>
             </div>
           ))}

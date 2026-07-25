@@ -3,7 +3,6 @@
 import { useState } from "react";
 import Link from "next/link";
 import { SafeImage } from "@/components/store/SafeImage";
-import { motion } from "framer-motion";
 import toast from "react-hot-toast";
 import { Crown, Sparkles, ShoppingBag } from "lucide-react";
 import { useCartStore } from "@/lib/cart";
@@ -23,9 +22,10 @@ import { AddedToBagModal } from "@/components/store/AddedToBagModal";
 interface ProductCardProps {
   product: ProductWithCategory;
   index?: number;
+  priority?: boolean;
 }
 
-export function ProductCard({ product, index = 0 }: ProductCardProps) {
+export function ProductCard({ product, priority = false }: ProductCardProps) {
   const addItem = useCartStore((s) => s.addItem);
 
   const defaultVariant = getDefaultVariant(product);
@@ -85,13 +85,7 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
 
   return (
     <>
-      <motion.article
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ delay: index * 0.08 }}
-        className="group relative flex h-full flex-col"
-      >
+      <article className="group relative flex h-full flex-col">
         <Link href={`/products/${product.slug}`} className="flex h-full flex-col">
           <div className="relative aspect-[3/4] overflow-hidden rounded-xl bg-cream-dark shadow-sm transition-shadow duration-300 group-hover:shadow-luxury-sm">
             <SafeImage
@@ -100,6 +94,8 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
               fill
               className="object-cover transition-transform duration-700 group-hover:scale-105"
               sizes="(max-width: 768px) 50vw, 25vw"
+              priority={priority}
+              fetchPriority={priority ? "high" : undefined}
             />
 
             <div className="absolute left-2.5 top-2.5 flex flex-col items-start gap-1.5 sm:left-3 sm:top-3">
@@ -195,7 +191,7 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
             </div>
           </div>
         </Link>
-      </motion.article>
+      </article>
 
       <QuickShopModal
         open={quickShopOpen}

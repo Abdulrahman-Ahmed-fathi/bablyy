@@ -13,7 +13,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { SlidersHorizontal, X } from "lucide-react";
 
 interface Category {
   id: string;
@@ -41,6 +41,13 @@ export function FilterSidebar({ categories, maxPrice }: FilterSidebarProps) {
       Number(searchParams.get("maxPrice") || maxPrice),
     ]);
   }, [searchParams, maxPrice]);
+
+  useEffect(() => {
+    document.body.style.overflow = open ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [open]);
 
   const updateParams = useCallback(
     (updates: Record<string, string | null>) => {
@@ -118,14 +125,14 @@ export function FilterSidebar({ categories, maxPrice }: FilterSidebarProps) {
 
       <div>
         <h3 className="mb-4 text-xs uppercase tracking-[0.2em] text-black/50">Gender</h3>
-        <div className="space-y-2">
+        <div className="space-y-1">
           {genders.map((g) => (
             <button
               key={g}
               type="button"
               onClick={() => updateParams({ gender: g === "All" ? null : g })}
-              className={`block w-full py-1 text-left text-sm ${
-                currentGender === g ? "font-medium text-brown" : "text-black/60"
+              className={`block w-full rounded-lg px-2 py-2.5 text-left text-sm transition-colors ${
+                currentGender === g ? "bg-cream-dark/60 font-medium text-brown" : "text-black/60 hover:bg-cream-dark/30"
               }`}
             >
               {g}
@@ -159,14 +166,46 @@ export function FilterSidebar({ categories, maxPrice }: FilterSidebarProps) {
       <button
         type="button"
         className="mb-4 flex w-full items-center justify-between rounded-xl border border-cream-dark p-4 md:hidden"
-        onClick={() => setOpen(!open)}
+        onClick={() => setOpen(true)}
       >
-        <span className="text-sm uppercase tracking-widest">Filters</span>
-        {open ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+        <span className="flex items-center gap-2 text-sm uppercase tracking-widest">
+          <SlidersHorizontal className="h-4 w-4" /> Filters
+        </span>
       </button>
-      <aside className={`${open ? "block" : "hidden"} md:block md:w-64 md:shrink-0`}>
-        {content}
-      </aside>
+
+      {/* Mobile: fixed overlay sheet — does not push page content */}
+      {open && (
+        <>
+          <div
+            className="fixed inset-0 z-50 bg-black/40 md:hidden"
+            onClick={() => setOpen(false)}
+          />
+          <div
+            className="fixed inset-x-0 bottom-0 z-50 max-h-[85vh] overflow-y-auto rounded-t-3xl bg-cream p-6 shadow-luxury md:hidden"
+            role="dialog"
+            aria-label="Filter products"
+          >
+            <div className="mb-6 flex items-center justify-between">
+              <span className="text-sm uppercase tracking-widest text-black">Filters</span>
+              <button
+                type="button"
+                onClick={() => setOpen(false)}
+                className="rounded-full p-1.5 text-black/60 hover:bg-cream-dark"
+                aria-label="Close filters"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            {content}
+            <Button className="mt-6 w-full" onClick={() => setOpen(false)}>
+              Show Results
+            </Button>
+          </div>
+        </>
+      )}
+
+      {/* Desktop: always-visible sidebar */}
+      <aside className="hidden md:block md:w-64 md:shrink-0">{content}</aside>
     </>
   );
 }

@@ -122,23 +122,23 @@ export default function CartPage() {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center rounded-lg border border-cream-dark">
                         <button
-                          className="px-2 py-1"
+                          className="flex h-10 w-10 items-center justify-center"
                           onClick={() =>
                             updateQuantity(item.productId, item.variantId, item.quantity - 1)
                           }
                           aria-label="Decrease quantity"
                         >
-                          <Minus className="h-3 w-3" />
+                          <Minus className="h-3.5 w-3.5" />
                         </button>
                         <span className="w-8 text-center text-sm">{item.quantity}</span>
                         <button
-                          className="px-2 py-1"
+                          className="flex h-10 w-10 items-center justify-center"
                           onClick={() =>
                             updateQuantity(item.productId, item.variantId, item.quantity + 1)
                           }
                           aria-label="Increase quantity"
                         >
-                          <Plus className="h-3 w-3" />
+                          <Plus className="h-3.5 w-3.5" />
                         </button>
                       </div>
                       <div className="flex items-center gap-4">

@@ -121,7 +121,7 @@ export function ProductDetailClient({
 
   return (
     <div className="mx-auto max-w-container px-4 py-12 lg:px-8">
-      <div className="grid gap-12 lg:grid-cols-2">
+      <div className="grid gap-12 lg:grid-cols-[3fr_4fr]">
         <div>
           <div className="relative aspect-[3/4] overflow-hidden rounded-2xl bg-cream-dark shadow-luxury-sm">
             <AnimatePresence mode="wait">
@@ -290,7 +290,7 @@ export function ProductDetailClient({
         <motion.div
           initial={{ y: 100 }}
           animate={{ y: 0 }}
-          className="fixed inset-x-0 bottom-0 z-30 flex items-center justify-between border-t border-cream-dark bg-cream p-4 md:hidden"
+          className="fixed inset-x-0 bottom-0 z-30 flex items-center justify-between border-t border-cream-dark bg-cream p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] md:hidden"
         >
           <div>
             <span className="font-body text-xl text-brown">
