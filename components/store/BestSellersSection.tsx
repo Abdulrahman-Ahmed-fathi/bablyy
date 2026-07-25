@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { motion } from "framer-motion";
 import { Crown } from "lucide-react";
 import { ProductCard } from "./ProductCard";
 import { Button } from "@/components/ui/button";
@@ -32,7 +31,7 @@ export function BestSellersSection({ products }: BestSellersSectionProps) {
               Best Sellers
             </h2>
             <p className="mx-auto mt-3 max-w-md text-sm text-cream/60 md:mx-0">
-              The our customers keep coming back for.
+              The scents our customers keep coming back for.
             </p>
           </div>
           <Button asChild>
@@ -42,21 +41,14 @@ export function BestSellersSection({ products }: BestSellersSectionProps) {
 
         <div className="scrollbar-none -mx-4 flex snap-x snap-mandatory gap-5 overflow-x-auto px-4 pb-2 lg:mx-0 lg:grid lg:grid-cols-4 lg:gap-6 lg:overflow-visible lg:px-0">
           {products.map((product, i) => (
-            <motion.div
+            <div
               key={product.id}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.08 }}
               className="relative w-[68%] shrink-0 snap-start sm:w-[42%] lg:w-auto"
             >
-              {/* <span className="absolute -left-2 -top-2 z-10 flex h-9 w-9 items-center justify-center rounded-full border border-gold/40 bg-yellow-900 font-display text-sm text-gold shadow-lg">
-                {String(i + 1).padStart(2, "0")}
-              </span> */}
               <div className="rounded-xl bg-cream p-2">
-                <ProductCard product={product} index={i} />
+                <ProductCard product={product} index={i} priority={i < 2} />
               </div>
-            </motion.div>
+            </div>
           ))}
         </div>
       </div>

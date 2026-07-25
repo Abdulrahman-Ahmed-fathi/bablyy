@@ -60,17 +60,21 @@ export function FeaturedProductsSection({ products }: FeaturedProductsSectionPro
               >
                 <ChevronLeft className="h-5 w-5" />
               </Button>
-              <div className="flex gap-2">
+              <div className="flex">
                 {Array.from({ length: totalPages }).map((_, i) => (
                   <button
                     key={i}
                     type="button"
                     onClick={() => setPage(i)}
-                    className={`h-2 w-2 rounded-full transition-colors ${
-                      i === page ? "bg-brown" : "bg-cream-dark"
-                    }`}
+                    className="flex h-10 w-10 items-center justify-center"
                     aria-label={`Page ${i + 1}`}
-                  />
+                  >
+                    <span
+                      className={`block h-2 w-2 rounded-full transition-colors ${
+                        i === page ? "bg-brown" : "bg-cream-dark"
+                      }`}
+                    />
+                  </button>
                 ))}
               </div>
               <Button
