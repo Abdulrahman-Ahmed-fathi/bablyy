@@ -145,35 +145,35 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
             )}
           </div>
 
-          <div className="mt-4 flex flex-1 flex-col px-1">
+          <div className="mt-4 flex flex-1 flex-col px-1 min-w-0">
             {product.category && (
-              <span className="text-[10px] uppercase tracking-[0.2em] text-black/45">
+              <span className="text-[10px] uppercase tracking-[0.2em] text-black/45 truncate">
                 {product.category.name}
               </span>
             )}
-            <h3 className="mt-1 font-body text-xl leading-tight">{product.name}</h3>
+            <h3 className="mt-1 font-body text-base sm:text-xl leading-tight line-clamp-2">{product.name}</h3>
 
-            <p className="mt-1 flex items-center gap-1.5 text-xs text-black/50">
+            <p className="mt-1 flex items-center gap-1.5 text-xs text-black/50 truncate">
               {topNote && (
                 <>
-                  <span>{topNote}</span>
-                  <span className="text-black/25">•</span>
+                  <span className="truncate">{topNote}</span>
+                  <span className="text-black/25 shrink-0">•</span>
                 </>
               )}
-              <span>
+              <span className="truncate">
                 {defaultVariant.size}
                 {hasMultipleSizes &&
                   ` (+${product.variants.length - 1} Size${product.variants.length > 2 ? "s" : ""})`}
               </span>
             </p>
 
-            <div className="mt-auto flex items-end justify-between pt-3">
-              <div className="flex items-center gap-2">
-                <span className="font-medium text-brown sm:text-lg">
+            <div className="mt-auto flex items-end justify-between gap-1 pt-3">
+              <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 min-w-0">
+                <span className="font-medium text-brown text-sm sm:text-lg whitespace-nowrap">
                   {formatPrice(pricing.price)}
                 </span>
                 {pricing.comparePrice && (
-                  <span className="text-xs text-black/40 line-through sm:text-sm">
+                  <span className="text-xs text-black/40 line-through whitespace-nowrap">
                     {formatPrice(pricing.comparePrice)}
                   </span>
                 )}
@@ -183,10 +183,10 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
                 type="button"
                 onClick={handleMobileIconClick}
                 disabled={outOfStock}
-                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brown text-white shadow-md transition-all hover:scale-105 hover:bg-brown-light active:scale-95 disabled:cursor-not-allowed disabled:bg-black/20 disabled:hover:scale-100 sm:h-10 sm:w-10 lg:hidden"
+                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-brown text-white shadow-md transition-all hover:scale-105 hover:bg-brown-light active:scale-95 disabled:cursor-not-allowed disabled:bg-black/20 disabled:hover:scale-100 sm:h-10 sm:w-10 lg:hidden"
                 aria-label="Quick shop"
               >
-                <ShoppingBag className="h-4 w-4 sm:h-[18px] sm:w-[18px]" />
+                <ShoppingBag className="h-3.5 w-3.5 sm:h-[18px] sm:w-[18px]" />
               </button>
             </div>
           </div>

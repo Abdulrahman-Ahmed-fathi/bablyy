@@ -9,8 +9,8 @@ export function Footer({ settings }: FooterProps) {
   const whatsapp = settings.whatsapp || process.env.NEXT_PUBLIC_WHATSAPP_NUMBER;
 
   return (
-    <footer className="bg-[#2f2118] text-cream">
-      <div className="mx-auto grid max-w-container gap-12 px-4 py-20 md:grid-cols-3 lg:px-8">
+    <footer className="bg-[#2f2118] text-cream overflow-hidden">
+      <div className="mx-auto grid max-w-container gap-8 md:gap-12 px-4 py-12 md:py-20 md:grid-cols-3 lg:px-8">
         <div>
           <h3 className="font-body text-2xl text-gold md:text-3xl">{settings.storeName}</h3>
           <p className="mt-3 text-sm leading-relaxed text-cream/75">{settings.tagline}</p>

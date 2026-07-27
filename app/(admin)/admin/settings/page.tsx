@@ -26,6 +26,7 @@ interface SettingsForm {
   heroImageUrl: string;
   logoUrl: string;
   showOffersSection: boolean;
+  showWhatsAppButton: boolean;
   aboutHeroImageUrl: string;
   aboutGalleryImages: string[];
   showAboutGallerySection: boolean;
@@ -59,6 +60,7 @@ export default function AdminSettingsPage() {
     heroImageUrl: "",
     logoUrl: "",
     showOffersSection: true,
+    showWhatsAppButton: true,
     aboutHeroImageUrl: "",
     aboutGalleryImages: [],
     showAboutGallerySection: true,
@@ -80,6 +82,7 @@ export default function AdminSettingsPage() {
         setForm({
           ...data,
           showOffersSection: data.showOffersSection ?? true,
+          showWhatsAppButton: data.showWhatsAppButton ?? true,
           aboutHeroImageUrl: data.aboutHeroImageUrl || "",
           aboutGalleryImages: Array.isArray(data.aboutGalleryImages)
             ? data.aboutGalleryImages
@@ -238,6 +241,16 @@ export default function AdminSettingsPage() {
           <Switch
             checked={form.showOffersSection}
             onCheckedChange={(v) => update("showOffersSection", v)}
+          />
+        </div>
+        <div className="flex items-center justify-between rounded-xl border border-stone-100 bg-stone-50 p-4">
+          <div>
+            <Label>Show WhatsApp Floating Button</Label>
+            <p className="text-xs text-stone-500">Display the floating WhatsApp button on storefront pages</p>
+          </div>
+          <Switch
+            checked={form.showWhatsAppButton}
+            onCheckedChange={(v) => update("showWhatsAppButton", v)}
           />
         </div>
       </section>
@@ -523,7 +536,7 @@ export default function AdminSettingsPage() {
         </div>
       </section>
 
-      <Button onClick={save} disabled={saving} className="bg-brown text-white hover:bg-brown-light">
+      <Button onClick={save} disabled={saving} className="w-full sm:w-auto bg-brown text-white hover:bg-brown-light">
         {saving ? "Saving..." : "Save Settings"}
       </Button>
     </div>

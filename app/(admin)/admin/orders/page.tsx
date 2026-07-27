@@ -104,14 +104,14 @@ export default function AdminOrdersPage() {
           placeholder="Search orders..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="max-w-sm"
+          className="w-full sm:max-w-sm"
         />
         <Select value={status} onValueChange={setStatus}>
-          <SelectTrigger className="w-48">
+          <SelectTrigger className="w-full sm:w-48">
             <SelectValue placeholder="All statuses" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">All statuses</SelectItem>
+            <SelectItem value="all">All statuses</SelectItem>
             {STATUS_KEYS.map((s) => (
               <SelectItem key={s} value={s}>
                 {s}
@@ -122,7 +122,8 @@ export default function AdminOrdersPage() {
       </div>
 
       <div className="overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-sm">
-        <Table>
+        <div className="overflow-x-auto">
+          <Table>
           <TableHeader>
             <TableRow>
               <TableHead>Order #</TableHead>
@@ -168,6 +169,7 @@ export default function AdminOrdersPage() {
             )}
           </TableBody>
         </Table>
+        </div>
       </div>
     </div>
   );

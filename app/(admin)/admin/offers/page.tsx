@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
+import { ImageUpload } from "@/components/admin/ImageUpload";
 import {
   Select,
   SelectContent,
@@ -34,6 +35,7 @@ interface Offer {
   title: string;
   description: string | null;
   discountPct: number;
+  imageUrl: string | null;
   isActive: boolean;
   startsAt: string | null;
   endsAt: string | null;
@@ -56,6 +58,7 @@ export default function AdminOffersPage() {
     description: "",
     discountPct: 10,
     productId: "",
+    imageUrl: "",
     startsAt: "",
     endsAt: "",
     isActive: true,
@@ -76,6 +79,7 @@ export default function AdminOffersPage() {
       description: "",
       discountPct: 10,
       productId: "",
+      imageUrl: "",
       startsAt: "",
       endsAt: "",
       isActive: true,
@@ -90,6 +94,7 @@ export default function AdminOffersPage() {
       description: offer.description || "",
       discountPct: offer.discountPct,
       productId: offer.productId || "",
+      imageUrl: offer.imageUrl || "",
       startsAt: offer.startsAt ? offer.startsAt.slice(0, 10) : "",
       endsAt: offer.endsAt ? offer.endsAt.slice(0, 10) : "",
       isActive: offer.isActive,
@@ -101,6 +106,7 @@ export default function AdminOffersPage() {
     const payload = {
       ...form,
       productId: form.productId || null,
+      imageUrl: form.imageUrl || null,
       startsAt: form.startsAt || null,
       endsAt: form.endsAt || null,
     };
@@ -135,9 +141,9 @@ export default function AdminOffersPage() {
 
   return (
     <div className="space-y-6">
-      <Button onClick={() => { resetForm(); setOpen(true); }}>Create Offer</Button>
+      <Button onClick={() => { resetForm(); setOpen(true); }} className="w-full sm:w-auto">Create Offer</Button>
 
-      <div className="rounded-lg border bg-white">
+      <div className="overflow-x-auto rounded-lg border bg-white">
         <Table>
           <TableHeader>
             <TableRow>
@@ -172,7 +178,7 @@ export default function AdminOffersPage() {
       </div>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="w-[95vw] max-w-md max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{editing ? "Edit Offer" : "Create Offer"}</DialogTitle>
           </DialogHeader>
@@ -191,16 +197,36 @@ export default function AdminOffersPage() {
             </div>
             <div>
               <Label>Apply To</Label>
-              <Select value={form.productId} onValueChange={(v) => setForm({ ...form, productId: v === "all" ? "" : v })}>
+              <Select value={form.productId} onValueChange={(v) => setForm({ ...form, productId: v === "all" ? "" : v, imageUrl: v !== "all" ? "" : form.imageUrl })}>
                 <SelectTrigger><SelectValue placeholder="All Products" /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Products</SelectItem>
+                  <SelectItem value="all">All Products (Sitewide)</SelectItem>
                   {products.map((p) => (
                     <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
+
+            {/* Show ImageUpload only for sitewide offers; product-specific offers use the product's own image */}
+            {!form.productId ? (
+              <div>
+                <ImageUpload
+                  label="Offer Banner Image"
+                  value={form.imageUrl}
+                  onChange={(path) => setForm({ ...form, imageUrl: path })}
+                  aspectClass="aspect-[16/7] w-full"
+                />
+                <p className="mt-1 text-xs text-stone-500">
+                  Displayed in the offer carousel slide. Recommended: landscape 16:7.
+                </p>
+              </div>
+            ) : (
+              <div className="rounded-lg border border-stone-100 bg-stone-50 p-3 text-xs text-stone-500">
+                📷 This offer will use the selected product&apos;s image in the carousel.
+              </div>
+            )}
+
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <Label>Start Date</Label>

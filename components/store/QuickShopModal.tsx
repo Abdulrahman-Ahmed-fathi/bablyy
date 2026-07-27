@@ -66,7 +66,7 @@ export function QuickShopModal({ open, onClose, product, onAdd }: QuickShopModal
           >
             <div className="flex items-center justify-between">
               <h2 className="font-display text-xl">Quick Shop</h2>
-              <button type="button" onClick={onClose} aria-label="Close" className="p-1">
+              <button type="button" onClick={onClose} aria-label="Close" className="p-2.5 -mr-2 text-black/60 hover:text-black rounded-full hover:bg-cream-dark/50 transition-colors">
                 <X className="h-5 w-5" />
               </button>
             </div>

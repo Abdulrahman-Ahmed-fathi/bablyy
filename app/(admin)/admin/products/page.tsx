@@ -86,9 +86,9 @@ export default function AdminProductsPage() {
           placeholder="Search products..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="max-w-sm"
+          className="w-full sm:max-w-sm"
         />
-        <Button asChild>
+        <Button asChild className="w-full sm:w-auto">
           <Link href="/admin/products/new">Add New Product</Link>
         </Button>
       </div>

@@ -190,7 +190,7 @@ export function FilterSidebar({ categories, maxPrice }: FilterSidebarProps) {
               <button
                 type="button"
                 onClick={() => setOpen(false)}
-                className="rounded-full p-1.5 text-black/60 hover:bg-cream-dark"
+                className="rounded-full p-2.5 -mr-1 text-black/60 hover:bg-cream-dark transition-colors"
                 aria-label="Close filters"
               >
                 <X className="h-5 w-5" />

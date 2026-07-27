@@ -22,6 +22,7 @@ const config: Config = {
       },
       fontFamily: {
         display: ["var(--font-cormorant)", "Georgia", "serif"],
+        serif: ["var(--font-cormorant)", "Georgia", "serif"],
         body: ["var(--font-jost)", "system-ui", "sans-serif"],
       },
       maxWidth: {

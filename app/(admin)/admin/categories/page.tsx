@@ -103,10 +103,10 @@ export default function AdminCategoriesPage() {
           />
         </div>
         <ImageUpload label="Category Image" value={newImageUrl} onChange={setNewImageUrl} aspectClass="aspect-[4/3] w-40" />
-        <Button type="submit">Add Category</Button>
+        <Button type="submit" className="w-full sm:w-auto">Add Category</Button>
       </form>
 
-      <div className="overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-sm">
+      <div className="overflow-x-auto rounded-2xl border border-stone-200 bg-white shadow-sm">
         <Table>
           <TableHeader>
             <TableRow>

@@ -33,14 +33,53 @@ export function CategorySection({ categories }: CategorySectionProps) {
   if (categories.length === 0) return null;
 
   return (
-    <section className="section-padding bg-cream">
+    <section className="section-padding bg-cream overflow-hidden">
       <div className="mx-auto max-w-container px-4 lg:px-8">
         <div className="mb-14 text-center">
           <p className="text-xs uppercase tracking-[0.3em] text-brown/70">Browse Perfumes</p>
           <h2 className="mt-3 font-serif text-brown text-3xl md:text-5xl">Collections</h2>
         </div>
 
-        <div className="relative">
+        {/* ── Mobile: horizontal scroll strip ── */}
+        <div className="-mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-2 scrollbar-none md:hidden">
+          {categories.map((cat) => (
+            <Link
+              key={cat.id}
+              href={`/products?category=${cat.slug}`}
+              className="group block w-[72%] shrink-0 snap-start sm:w-[48%]"
+            >
+              <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-cream-dark shadow-sm transition-shadow duration-500 group-hover:shadow-luxury-sm">
+                <SafeImage
+                  src={cat.imageUrl || `${DEFAULT_CATEGORY_IMAGE}&seed=${cat.slug}`}
+                  alt={cat.name}
+                  fill
+                  className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.06]"
+                  sizes="(max-width: 768px) 72vw, 48vw"
+                />
+                <div className="absolute inset-0 bg-black/0 transition-colors duration-500 group-hover:bg-black/10" />
+                <div className="absolute right-3 top-3 flex h-9 w-9 -translate-y-2 items-center justify-center rounded-full bg-white/90 text-black opacity-0 shadow-sm backdrop-blur-sm transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
+                  <ArrowUpRight className="h-4 w-4" />
+                </div>
+              </div>
+              <div className="mt-4 flex items-start justify-between gap-3 px-1">
+                <div>
+                  <h3 className="font-serif text-xl leading-tight text-black transition-colors group-hover:text-brown">
+                    {cat.name}
+                  </h3>
+                  {cat._count !== undefined && (
+                    <p className="mt-1 text-xs uppercase tracking-[0.2em] text-black/45">
+                      {cat._count.products} {cat._count.products === 1 ? "Piece" : "Pieces"}
+                    </p>
+                  )}
+                </div>
+                <span className="mt-1 h-px w-8 shrink-0 bg-brown/40 transition-all duration-500 group-hover:w-12 group-hover:bg-brown" />
+              </div>
+            </Link>
+          ))}
+        </div>
+
+        {/* ── Desktop: paginated grid ── */}
+        <div className="relative hidden md:block">
           <AnimatePresence mode="wait">
             <motion.div
               key={page}
@@ -58,7 +97,7 @@ export function CategorySection({ categories }: CategorySectionProps) {
                       alt={cat.name}
                       fill
                       className="object-cover transition-transform  duration-700 ease-out group-hover:scale-[1.06]"
-                      sizes="(max-width: 768px) 100vw, 33vw"
+                      sizes="33vw"
                     />
                     <div className="absolute  inset-0 bg-black/0 transition-colors duration-500 group-hover:bg-black/10" />
 
@@ -130,4 +169,5 @@ export function CategorySection({ categories }: CategorySectionProps) {
       </div>
     </section>
   );
+
 }

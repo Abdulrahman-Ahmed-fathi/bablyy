@@ -86,14 +86,13 @@ export default function OrderDetailPage() {
 
   return (
     <div className="space-y-6">
-      <div className="no-print flex flex-wrap gap-3">
-        
-        <Button variant="outline" asChild>
+      <div className="no-print flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+        <Button variant="outline" asChild className="w-full sm:w-auto">
           <a href={`https://wa.me/${order.phone.replace(/\D/g, "")}?text=${whatsappMsg}`} target="_blank" rel="noopener noreferrer">
             WhatsApp Customer
           </a>
         </Button>
-        <Button variant="outline" onClick={() => window.print()}>
+        <Button variant="outline" onClick={() => window.print()} className="w-full sm:w-auto">
           Print Order
         </Button>
       </div>
@@ -118,7 +117,7 @@ export default function OrderDetailPage() {
             </div>
             <div className="no-print pt-2">
               <Select value={order.status} onValueChange={(v) => updateStatus(v as OrderStatus)}>
-                <SelectTrigger className="w-48">
+                <SelectTrigger className="w-full sm:w-48">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -153,7 +152,8 @@ export default function OrderDetailPage() {
           <CardTitle className="text-lg">Items</CardTitle>
         </CardHeader>
         <CardContent>
-          <Table>
+          <div className="overflow-x-auto">
+            <Table>
             <TableHeader>
               <TableRow>
                 <TableHead>Product</TableHead>
@@ -176,6 +176,7 @@ export default function OrderDetailPage() {
               ))}
             </TableBody>
           </Table>
+          </div>
           <div className="mt-4 space-y-1 text-right text-sm">
             <p>Subtotal: {formatPrice(order.subtotal)}</p>
             {order.discount > 0 && <p>Discount: -{formatPrice(order.discount)}</p>}

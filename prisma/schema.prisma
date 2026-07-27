@@ -76,6 +76,7 @@ model Offer {
   title       String
   description String?
   discountPct Float
+  imageUrl    String?
   isActive    Boolean   @default(true)
   startsAt    DateTime?
   endsAt      DateTime?
@@ -139,6 +140,7 @@ model SiteSettings {
   aboutGalleryImages      String   @default("[]")
   showAboutGallerySection Boolean  @default(true)
   showMapSection          Boolean  @default(true)
+  showWhatsAppButton      Boolean  @default(true)
   mapLocations            String   @default("[]")
 
   updatedAt         DateTime @updatedAt

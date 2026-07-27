@@ -388,7 +388,7 @@ export function ProductForm({ initialData }: ProductFormProps) {
         </div>
       </div>
 
-      <div className="flex flex-wrap items-center gap-6 rounded-xl border border-stone-100 bg-stone-50 p-4">
+      <div className="grid grid-cols-2 gap-4 sm:flex sm:flex-wrap sm:items-center sm:gap-6 rounded-xl border border-stone-100 bg-stone-50 p-4">
         <div className="flex items-center gap-2">
           <Switch checked={isFeatured} onCheckedChange={(v) => setValue("isFeatured", v)} />
           <Label>Featured</Label>
@@ -407,11 +407,11 @@ export function ProductForm({ initialData }: ProductFormProps) {
         </div>
       </div>
 
-      <div className="flex gap-3">
-        <Button type="submit" disabled={isSubmitting}>
+      <div className="flex flex-col gap-3 sm:flex-row">
+        <Button type="submit" disabled={isSubmitting} className="w-full sm:w-auto">
           {isSubmitting ? "Saving..." : "Save Product"}
         </Button>
-        <Button type="button" variant="outline" onClick={() => router.back()}>
+        <Button type="button" variant="outline" onClick={() => router.back()} className="w-full sm:w-auto">
           Cancel
         </Button>
       </div>

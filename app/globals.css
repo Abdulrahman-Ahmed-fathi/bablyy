@@ -12,6 +12,11 @@
   --color-gold: #b8956a;
 }
 
+html {
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
 @layer base {
   * {
     @apply border-cream-dark;
@@ -19,6 +24,10 @@
 
   body {
     @apply bg-cream text-black font-body antialiased;
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100%;
+    position: relative;
   }
 
   h1,

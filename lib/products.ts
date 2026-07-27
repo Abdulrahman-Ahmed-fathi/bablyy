@@ -105,6 +105,7 @@ const DEFAULT_SITE_SETTINGS = {
   showAboutGallerySection: true,
   mapLocations: "[]",
   showMapSection: true,
+  showWhatsAppButton: true,
 };
 
 export async function getActiveSitewideOffer(): Promise<Offer | null> {
