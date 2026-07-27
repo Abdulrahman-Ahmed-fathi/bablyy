@@ -72,6 +72,7 @@ export const offerSchema = z.object({
   description: z.string().optional().nullable(),
   discountPct: z.coerce.number().min(1).max(100),
   productId: z.string().optional().nullable(),
+  imageUrl: z.string().optional().nullable(),
   startsAt: z.string().optional().nullable(),
   endsAt: z.string().optional().nullable(),
   isActive: z.boolean().default(true),
@@ -96,6 +97,7 @@ export const settingsSchema = z.object({
   aboutGalleryImages: z.array(z.string()).max(6).default([]),
   showAboutGallerySection: z.boolean().default(true),
   showMapSection: z.boolean().default(true),
+  showWhatsAppButton: z.boolean().default(true),
   mapLocations: z.array(
     z.object({
       id: z.string(),

@@ -122,7 +122,7 @@ export function Navbar({ settings }: NavbarProps) {
                 </span>
                 <button
                   type="button"
-                  className="rounded-full p-1.5 text-black/70 transition-colors hover:bg-cream-dark hover:text-brown"
+                  className="rounded-full p-2.5 -mr-1 text-black/70 transition-colors hover:bg-cream-dark hover:text-brown"
                   onClick={() => setMobileOpen(false)}
                   aria-label="Close menu"
                 >

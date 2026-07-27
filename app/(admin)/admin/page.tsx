@@ -92,7 +92,7 @@ export default function AdminDashboardPage() {
         </div>
       )}
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatsCard title="Total Orders" value={stats.totalOrders} />
         <StatsCard title="Pending Orders" value={stats.pendingOrders} accent="amber" />
         <StatsCard title="Active Products" value={stats.totalProducts} />
@@ -100,8 +100,8 @@ export default function AdminDashboardPage() {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <div className="rounded-2xl border border-cream-dark/60 bg-white p-6 shadow-luxury-sm">
-          <h2 className="mb-4 font-body text-lg tracking-wide text-brown uppercase">Orders (Last 30 Days)</h2>
+        <div className="rounded-2xl border border-cream-dark/60 bg-white p-4 sm:p-6 shadow-luxury-sm">
+          <h2 className="mb-4 font-body text-base sm:text-lg tracking-wide text-brown uppercase">Orders (Last 30 Days)</h2>
           <ResponsiveContainer width="100%" height={250}>
             <LineChart data={stats.ordersPerDay}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e7e5e4" />
@@ -113,8 +113,8 @@ export default function AdminDashboardPage() {
           </ResponsiveContainer>
         </div>
 
-        <div className="rounded-2xl border border-cream-dark/60 bg-white p-6 shadow-luxury-sm">
-          <h2 className="mb-4 font-body text-lg tracking-wide text-brown uppercase">Orders by Status</h2>
+        <div className="rounded-2xl border border-cream-dark/60 bg-white p-4 sm:p-6 shadow-luxury-sm">
+          <h2 className="mb-4 font-body text-base sm:text-lg tracking-wide text-brown uppercase">Orders by Status</h2>
           <ResponsiveContainer width="100%" height={250}>
             <PieChart>
               <Pie
@@ -123,7 +123,7 @@ export default function AdminDashboardPage() {
                 nameKey="status"
                 cx="50%"
                 cy="50%"
-                outerRadius={80}
+                outerRadius={65}
                 label={(entry) => `${entry.name}: ${entry.value}`}
               >
                 {stats.ordersByStatus.map((_, i) => (
@@ -140,7 +140,8 @@ export default function AdminDashboardPage() {
         <div className="border-b border-stone-100 px-6 py-4 bg-white">
           <h2 className="font-body text-lg tracking-wide text-brown uppercase">Recent Orders</h2>
         </div>
-        <Table>
+        <div className="overflow-x-auto">
+          <Table>
           <TableHeader>
             <TableRow>
               <TableHead>Order #</TableHead>
@@ -185,6 +186,7 @@ export default function AdminDashboardPage() {
             )}
           </TableBody>
         </Table>
+        </div>
       </div>
     </div>
   );

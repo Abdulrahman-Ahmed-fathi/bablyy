@@ -145,13 +145,13 @@ export function ProductDetailClient({
             </AnimatePresence>
           </div>
           {images.length > 1 && (
-            <div className="mt-4 flex gap-2">
+            <div className="mt-4 flex gap-2 overflow-x-auto scrollbar-none pb-1">
               {images.map((img, i) => (
                 <button
                   key={i}
                   type="button"
                   onClick={() => setActiveImage(i)}
-                  className={`relative h-20 w-16 overflow-hidden rounded-lg border-2 ${
+                  className={`relative h-20 w-16 shrink-0 overflow-hidden rounded-lg border-2 ${
                     i === activeImage ? "border-brown" : "border-transparent"
                   }`}
                 >
@@ -212,7 +212,7 @@ export function ProductDetailClient({
             <FragranceNotes notes={notes} />
           </div>
 
-          <div className="mt-8 flex items-center gap-4">
+          <div className="mt-8 flex flex-wrap items-center gap-3 sm:gap-4">
             <span className="text-sm uppercase tracking-wider">Quantity</span>
             <div className="flex items-center rounded-lg border border-cream-dark">
                
@@ -276,7 +276,7 @@ export function ProductDetailClient({
           <h2 className="mb-8 font-body text-2xl text-brown">You May Also Like</h2>
           <ProductCarousel>
             {related.map((p, i) => (
-              <div key={p.id} className="w-[260px] shrink-0 snap-start sm:w-[280px]">
+              <div key={p.id} className="w-[68%] shrink-0 snap-start sm:w-[42%] lg:w-[260px]">
                 <ProductCard product={p} index={i} />
               </div>
             ))}

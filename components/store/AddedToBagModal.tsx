@@ -58,7 +58,7 @@ export function AddedToBagModal({ open, onClose, product, variantId }: AddedToBa
           >
             <div className="flex items-center justify-between">
               <h2 className="font-display text-xl">You just added to your bag</h2>
-              <button type="button" onClick={onClose} aria-label="Close" className="shrink-0 p-1">
+              <button type="button" onClick={onClose} aria-label="Close" className="shrink-0 p-2.5 -mr-2 text-black/60 hover:text-black rounded-full hover:bg-cream-dark/50 transition-colors">
                 <X className="h-5 w-5" />
               </button>
             </div>

@@ -29,7 +29,7 @@ function RecentlyViewedSkeleton() {
       <h2 className="mb-8 font-body text-2xl text-brown">Recently Viewed</h2>
       <div className="flex gap-5 overflow-hidden">
         {Array.from({ length: 4 }).map((_, i) => (
-          <div key={i} className="w-[260px] shrink-0 sm:w-[280px] space-y-4">
+          <div key={i} className="w-[68%] shrink-0 sm:w-[42%] lg:w-[260px] space-y-4">
             <div className="aspect-[3/4] w-full rounded-xl bg-cream-dark/40 animate-pulse" />
             <div className="h-4 w-2/3 rounded bg-cream-dark/40 animate-pulse" />
             <div className="h-4 w-1/3 rounded bg-cream-dark/40 animate-pulse" />
@@ -83,7 +83,7 @@ export function RecentlyViewed({ currentId }: { currentId: string }) {
       <h2 className="mb-8 font-body text-2xl text-brown">Recently Viewed</h2>
       <ProductCarousel>
         {products.map((p, i) => (
-          <div key={p.id} className="w-[260px] shrink-0 snap-start sm:w-[280px]">
+          <div key={p.id} className="w-[68%] shrink-0 snap-start sm:w-[42%] lg:w-[260px]">
             <ProductCard product={p} index={i} />
           </div>
         ))}

@@ -141,24 +141,25 @@ export default function CheckoutPage() {
     <div className="mx-auto max-w-container px-4 py-12 lg:px-8">
       <h1 className="mb-8 font-display text-4xl md:text-5xl">Checkout</h1>
 
-      <div className="mb-8 flex gap-4">
+      <div className="mb-8 flex gap-2 sm:gap-4">
         {steps.map((s) => (
           <button
             key={s.num}
             type="button"
             onClick={() => s.num < step && setStep(s.num)}
-            className={`flex-1 border-b-2 pb-2 text-sm uppercase tracking-wider transition-colors ${
-              step >= s.num ? "border-brown text-brown" : "border-cream-dark text-black/40"
+            className={`flex-1 border-b-2 pb-2 text-xs sm:text-sm uppercase tracking-wider transition-colors truncate ${
+              step >= s.num ? "border-brown text-brown font-medium" : "border-cream-dark text-black/40"
             }`}
           >
+            <span className="inline sm:hidden">{s.num}. </span>
             {s.label}
           </button>
         ))}
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)}>
-        <div className="grid gap-12 lg:grid-cols-3">
-          <div className="space-y-6 lg:col-span-2">
+        <div className="grid gap-8 lg:gap-12 lg:grid-cols-3">
+          <div className="order-2 lg:order-1 space-y-6 lg:col-span-2">
             {step === 1 && (
               <div className="space-y-4 rounded-2xl border border-cream-dark bg-white p-6 shadow-sm">
                 <div className="grid gap-4 sm:grid-cols-2">
@@ -293,18 +294,18 @@ export default function CheckoutPage() {
             )}
           </div>
 
-          <div>
-            <Card className="sticky top-24 rounded-2xl shadow-luxury-sm">
+          <div className="order-1 lg:order-2">
+            <Card className="rounded-2xl shadow-luxury-sm lg:sticky lg:top-24">
               <CardContent className="p-6">
                 <h2 className="font-body text-xl">Order Summary</h2>
                 <ul className="mt-4 space-y-2 text-sm">
                   {items.map((item) => (
-                    <li key={`${item.productId}-${item.variantId}`} className="flex justify-between">
-                      <span>
+                    <li key={`${item.productId}-${item.variantId}`} className="flex justify-between gap-2">
+                      <span className="truncate">
                         {item.name}
                         {item.size && ` (${item.size})`} × {item.quantity}
                       </span>
-                      <span>{formatPrice(item.price * item.quantity)}</span>
+                      <span className="shrink-0">{formatPrice(item.price * item.quantity)}</span>
                     </li>
                   ))}
                 </ul>

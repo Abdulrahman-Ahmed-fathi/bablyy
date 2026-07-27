@@ -23,7 +23,7 @@ export function FeaturedProductsSection({ products }: FeaturedProductsSectionPro
   if (products.length === 0) return null;
 
   return (
-    <section className="section-padding bg-cream-dark/40">
+    <section className="section-padding bg-cream-dark/40 overflow-hidden">
       <div className="mx-auto max-w-container px-4 lg:px-8">
         <div className="mb-14 flex flex-col items-center justify-between gap-6 md:flex-row md:items-end">
           <div className="text-center md:text-left">

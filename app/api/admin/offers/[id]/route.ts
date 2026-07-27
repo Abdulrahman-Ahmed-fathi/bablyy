@@ -27,6 +27,7 @@ export async function PATCH(
         ...(data.title !== undefined && { title: data.title }),
         ...(data.description !== undefined && { description: data.description }),
         ...(data.discountPct !== undefined && { discountPct: data.discountPct }),
+        ...(data.imageUrl !== undefined && { imageUrl: data.imageUrl || null }),
         ...(data.productId !== undefined && { productId: data.productId || null }),
         ...(data.startsAt !== undefined && {
           startsAt: data.startsAt ? new Date(data.startsAt) : null,

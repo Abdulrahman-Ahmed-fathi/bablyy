@@ -15,7 +15,7 @@ export default async function StoreLayout({
       <Navbar settings={settings} />
       <main className="min-h-screen pt-16">{children}</main>
       <Footer settings={settings} />
-      <WhatsAppButton number={settings.whatsapp} />
+      {settings.showWhatsAppButton && <WhatsAppButton number={settings.whatsapp} />}
     </>
   );
 }

@@ -65,7 +65,7 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
           >
             <div className="flex items-center justify-between border-b border-cream-dark p-6">
               <h2 className="font-display text-2xl">Your Cart</h2>
-              <button type="button" onClick={onClose} aria-label="Close cart">
+              <button type="button" onClick={onClose} aria-label="Close cart" className="p-2.5 -mr-2 text-black/60 hover:text-black rounded-full hover:bg-cream-dark/50 transition-colors">
                 <X className="h-5 w-5" />
               </button>
             </div>

@@ -40,6 +40,7 @@ export async function POST(request: NextRequest) {
         title: data.title,
         description: data.description,
         discountPct: data.discountPct,
+        imageUrl: data.imageUrl || null,
         productId: data.productId || null,
         startsAt: data.startsAt ? new Date(data.startsAt) : null,
         endsAt: data.endsAt ? new Date(data.endsAt) : null,
